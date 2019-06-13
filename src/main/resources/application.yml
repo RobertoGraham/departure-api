@@ -1,0 +1,3 @@
+transportApi:
+  applicationId: ${TRANSPORT_API_APPLICATION_ID:defaultApplicationIdValue}
+  applicationKey: ${TRANSPORT_API_APPLICATION_KEY:defaultApplicationKeyValue}
