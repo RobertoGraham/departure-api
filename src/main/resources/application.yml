@@ -1,3 +1,18 @@
-transportApi:
-  applicationId: ${TRANSPORT_API_APPLICATION_ID:defaultApplicationIdValue}
-  applicationKey: ${TRANSPORT_API_APPLICATION_KEY:defaultApplicationKeyValue}
+transportApiClient:
+  url: ${TRANSPORT_API_CLIENT_URL:https://transportapi.com/v3/uk/}
+  applicationId: ${TRANSPORT_API_CLIENT_APPLICATION_ID:defaultApplicationIdValue}
+  applicationKey: ${TRANSPORT_API_CLIENT_APPLICATION_KEY:defaultApplicationKeyValue}
+
+feign:
+  hystrix:
+    enabled: false
+
+debug: true
+
+logging:
+  level:
+    io.github.robertograham.busapi.client.TransportApiClient: DEBUG
+
+spring.jackson:
+  default-property-inclusion: NON_NULL
+

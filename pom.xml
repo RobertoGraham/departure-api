@@ -20,7 +20,7 @@
 
     <properties>
         <java.version>11</java.version>
-        <transportapi-client.version>1.2.0</transportapi-client.version>
+        <spring-cloud.version>Greenwich.SR1</spring-cloud.version>
     </properties>
 
     <dependencies>
@@ -30,15 +30,14 @@
         </dependency>
 
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>io.github.robertograham</groupId>
-            <artifactId>transportapi-client</artifactId>
-            <version>${transportapi-client.version}</version>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
@@ -47,6 +46,18 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
