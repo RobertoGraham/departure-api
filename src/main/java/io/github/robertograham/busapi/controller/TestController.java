@@ -23,7 +23,7 @@ final class TestController {
 
     @GetMapping(value = "/test", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     private BusStopDeparturesResponse test() {
-        BusStopDeparturesResponse busStopDeparturesResponse =  transportApiClient.busStopDepartures("490000077E", LocalDate.now(), LocalTime.now().plusHours(5L), Group.NO, 1);
+        BusStopDeparturesResponse busStopDeparturesResponse = transportApiClient.busStopDepartures("490000077E", LocalDate.now(), LocalTime.now().plusHours(5L), Group.NO, 1);
         return busStopDeparturesResponse;
     }
 }
