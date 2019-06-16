@@ -1,5 +1,6 @@
 package io.github.robertograham.busapi.client;
 
+import io.github.robertograham.busapi.client.dto.BusServiceResponse;
 import io.github.robertograham.busapi.client.dto.BusStopDeparturesResponse;
 import io.github.robertograham.busapi.client.dto.Group;
 import io.github.robertograham.busapi.client.dto.NextBuses;
@@ -18,6 +19,10 @@ import java.time.LocalTime;
     configuration = TransportApiClientConfiguration.class
 )
 public interface TransportApiClient {
+
+    @GetMapping(value = "/bus/services/{operator}:{line}.json", produces = MediaType.APPLICATION_JSON_VALUE)
+    BusServiceResponse busService(@PathVariable String operator,
+                                  @PathVariable String line);
 
     @GetMapping(value = "/bus/stop/{atcoCode}/live.json", produces = MediaType.APPLICATION_JSON_VALUE)
     BusStopDeparturesResponse busStopDepartures(@PathVariable String atcoCode,
