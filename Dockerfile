@@ -4,7 +4,7 @@ FROM maven:3.6.1-jdk-11-slim AS build
 ARG BUILD_DIR
 WORKDIR $BUILD_DIR
 COPY pom.xml .
-RUN mvn -B dependency:resolve dependency:resolve-plugins
+RUN mvn -B dependency:go-offline
 COPY src src
 RUN mvn package
 

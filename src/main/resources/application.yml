@@ -6,6 +6,10 @@ transportApiClient:
 feign:
   hystrix:
     enabled: false
+  client:
+    config:
+      transportApiClient:
+        loggerLevel: full
 
 debug: true
 

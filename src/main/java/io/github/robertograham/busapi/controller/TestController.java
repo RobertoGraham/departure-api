@@ -1,16 +1,22 @@
 package io.github.robertograham.busapi.controller;
 
 import io.github.robertograham.busapi.client.TransportApiClient;
-import io.github.robertograham.busapi.client.dto.BusServiceResponse;
+import io.github.robertograham.busapi.client.dto.BusStopDeparturesResponse;
+import io.github.robertograham.busapi.client.dto.Group;
+import lombok.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-final class TestController {
+import java.time.LocalDate;
+import java.time.LocalTime;
 
-    private final TransportApiClient transportApiClient;
+@RestController
+@Value
+class TestController {
+
+    TransportApiClient transportApiClient;
 
     @Autowired
     private TestController(final TransportApiClient transportApiClient) {
@@ -18,7 +24,7 @@ final class TestController {
     }
 
     @GetMapping(value = "/test", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    private BusServiceResponse test() {
-        return transportApiClient.busService("SL", "59");
+    private BusStopDeparturesResponse test() {
+        return transportApiClient.busStopDepartures("490000077E", LocalDate.now(), LocalTime.now().plusHours(5L), Group.NO, 1);
     }
 }
