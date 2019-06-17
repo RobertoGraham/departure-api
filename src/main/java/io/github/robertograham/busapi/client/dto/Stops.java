@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Stops {
 
-    ALL("all"), ONWARD("onward");
+    ALL("all"),
+
+    ONWARD("onward");
 
     @Getter
     @NonNull

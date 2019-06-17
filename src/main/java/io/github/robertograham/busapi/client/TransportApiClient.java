@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -43,4 +44,14 @@ public interface TransportApiClient {
                               @PathVariable(required = false) LocalTime time,
                               @RequestParam(value = "edge_geometry", required = false) Boolean edgeGeometry,
                               @RequestParam(required = false) Stops stops);
+
+    @GetMapping(value = "/places.json", produces = MediaType.APPLICATION_JSON_VALUE)
+    PlacesResponse places(@RequestParam(value = "lat", required = false) BigDecimal latitude,
+                          @RequestParam(value = "lon", required = false) BigDecimal longitude,
+                          @RequestParam(value = "max_lat", required = false) BigDecimal maxLatitude,
+                          @RequestParam(value = "max_lon", required = false) BigDecimal maxLongitude,
+                          @RequestParam(value = "min_lat", required = false) BigDecimal minLatitude,
+                          @RequestParam(value = "min_lon", required = false) BigDecimal minLongitude,
+                          @RequestParam(required = false) String query,
+                          @RequestParam(value = "type", required = false) TypeSet typeSet);
 }

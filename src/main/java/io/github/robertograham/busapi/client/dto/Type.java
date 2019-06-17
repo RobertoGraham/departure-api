@@ -5,11 +5,21 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public enum Group {
+public enum Type {
 
-    ROUTE("route"),
+    TRAIN_STATION("train_station"),
 
-    NO("no");
+    BUS_STOP("bus_stop"),
+
+    SETTLEMENT("settlement"),
+
+    REGION("region"),
+
+    STREET("street"),
+
+    POINT_OF_INTEREST("poi"),
+
+    POSTCODE("postcode");
 
     @Getter
     @NonNull

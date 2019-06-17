@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum NextBuses {
 
-    YES("yes"), NO("no");
+    YES("yes"),
+
+    NO("no");
 
     @Getter
     @NonNull
