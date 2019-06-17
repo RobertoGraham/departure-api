@@ -1,8 +1,8 @@
 package io.github.robertograham.busapi.controller;
 
 import io.github.robertograham.busapi.client.TransportApiClient;
-import io.github.robertograham.busapi.client.dto.BusStopDeparturesResponse;
-import io.github.robertograham.busapi.client.dto.Group;
+import io.github.robertograham.busapi.client.dto.BusRouteResponse;
+import io.github.robertograham.busapi.client.dto.Stops;
 import lombok.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -24,7 +24,7 @@ class TestController {
     }
 
     @GetMapping(value = "/test", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    private BusStopDeparturesResponse test() {
-        return transportApiClient.busStopDepartures("490000077E", LocalDate.now(), LocalTime.now().plusHours(5L), Group.NO, 1);
+    private BusRouteResponse test() {
+        return transportApiClient.busRoute("CX", "68", "inbound", "490000077E", LocalDate.now(), LocalTime.now(), false, Stops.ONWARD);
     }
 }

@@ -1,9 +1,6 @@
 package io.github.robertograham.busapi.client;
 
-import io.github.robertograham.busapi.client.dto.BusServiceResponse;
-import io.github.robertograham.busapi.client.dto.BusStopDeparturesResponse;
-import io.github.robertograham.busapi.client.dto.Group;
-import io.github.robertograham.busapi.client.dto.NextBuses;
+import io.github.robertograham.busapi.client.dto.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,4 +33,14 @@ public interface TransportApiClient {
                                                 @PathVariable(required = false) LocalTime time,
                                                 @RequestParam(required = false) Group group,
                                                 @RequestParam(required = false) Integer limit);
+
+    @GetMapping(value = "/bus/route/{operator}/{line}/{direction}/{atcoCode}/{date}/{time}/timetable.json", produces = MediaType.APPLICATION_JSON_VALUE)
+    BusRouteResponse busRoute(@PathVariable String operator,
+                              @PathVariable String line,
+                              @PathVariable String direction,
+                              @PathVariable String atcoCode,
+                              @PathVariable(required = false) LocalDate date,
+                              @PathVariable(required = false) LocalTime time,
+                              @RequestParam(value = "edge_geometry", required = false) Boolean edgeGeometry,
+                              @RequestParam(required = false) Stops stops);
 }
