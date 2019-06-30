@@ -12,8 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@lombok.Value
-class TransportApiClientConfiguration {
+final class TransportApiClientConfiguration {
 
     @Bean
     private RequestInterceptor requestInterceptor(@Value("${transportApiClient.applicationId}") final String applicationId,
