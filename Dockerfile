@@ -10,7 +10,8 @@ RUN mvn package
 
 FROM adoptopenjdk/openjdk11:x86_64-alpine-jre-11.0.3_7
 ARG BUILD_DIR
+ENV PORT=8080
 WORKDIR /opt/app
 COPY --from=0 $BUILD_DIR/target/*.jar application.jar
-EXPOSE 8080
-ENTRYPOINT [ "java", "-jar", "application.jar" ]
+EXPOSE $PORT
+CMD [ "java", "-jar", "application.jar" ]
