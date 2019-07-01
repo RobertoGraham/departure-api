@@ -8,7 +8,7 @@ RUN mvn -B dependency:go-offline
 COPY src src
 RUN mvn package
 
-FROM adoptopenjdk/openjdk11:x86_64-alpine-jre-11.0.3_7_openj9-0.14.3
+FROM adoptopenjdk/openjdk11-openj9:x86_64-alpine-jre-11.0.3_7_openj9-0.14.3
 ARG BUILD_DIR
 ENV PORT=8080
 WORKDIR /opt/app
