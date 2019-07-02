@@ -29,7 +29,7 @@ final class PlacesController {
     private PlacesResponse busStops(@RequestParam final BigDecimal latitude,
                                     @RequestParam final BigDecimal longitude) {
         return transportApiClient.places(latitude, longitude, null, null, null, null, null, TypeSet.newBuilder()
-            .type(Type.BUS_STOP)
-            .build());
+                .type(Type.BUS_STOP)
+                .build());
     }
 }

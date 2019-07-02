@@ -12,9 +12,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @FeignClient(
-    name = "transportApiClient",
-    url = "${transportApiClient.url}",
-    configuration = TransportApiClientConfiguration.class
+        name = "transportApiClient",
+        url = "${transportApiClient.url}",
+        configuration = TransportApiClientConfiguration.class
 )
 public interface TransportApiClient {
 
