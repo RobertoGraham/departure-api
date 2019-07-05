@@ -2,24 +2,17 @@ package io.github.robertograham.busapi.client;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
-import feign.Response;
 import feign.codec.ErrorDecoder;
 import io.github.robertograham.busapi.client.dto.*;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.openfeign.FeignFormatterRegistrar;
 import org.springframework.context.annotation.Bean;
 import org.springframework.format.FormatterRegistry;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 final class TransportApiClientConfiguration {
@@ -50,29 +43,6 @@ final class TransportApiClientConfiguration {
 
     @Bean
     private ErrorDecoder errorDecoder() {
-        return (final String methodKey, final Response response) -> {
-            final String responseBodyAsString = Optional.ofNullable(response.body())
-                    .map((final Response.Body responseBody) -> {
-                        try {
-                            return responseBody.asInputStream();
-                        } catch (final IOException exception) {
-                            return null;
-                        }
-                    })
-                    .map((final InputStream inputStream) -> {
-                        try (inputStream) {
-                            return IOUtils.toString(inputStream);
-                        } catch (final IOException exception) {
-                            return null;
-                        }
-                    })
-                    .orElse(null);
-            final ResponseStatusException responseStatusException = Optional.ofNullable(HttpStatus.resolve(response.status()))
-                    .map(httpStatus -> new ResponseStatusException(httpStatus, responseBodyAsString))
-                    .orElse(null);
-            return responseStatusException != null ?
-                    responseStatusException
-                    : new ErrorDecoder.Default().decode(methodKey, response);
-        };
+        return new ResponseStatusExceptionErrorDecoder();
     }
 }

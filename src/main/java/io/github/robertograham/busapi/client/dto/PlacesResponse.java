@@ -66,7 +66,6 @@ public class PlacesResponse {
         String atcoCode;
 
         @JsonProperty("distance")
-        @NonNull
         Integer distance;
     }
 }

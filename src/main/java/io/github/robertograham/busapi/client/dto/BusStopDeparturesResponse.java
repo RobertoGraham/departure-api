@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
@@ -56,6 +57,10 @@ public class BusStopDeparturesResponse {
     @NonNull
     Map<String, List<Departure>> departures;
 
+    @JsonProperty("location")
+    @NonNull
+    Location location;
+
     @lombok.Builder(builderClassName = "Builder", builderMethodName = "newBuilder")
     @Value
     @JsonDeserialize(builder = Departure.Builder.class)
@@ -72,11 +77,9 @@ public class BusStopDeparturesResponse {
         String line;
 
         @JsonProperty("line_name")
-        @NonNull
         String lineName;
 
         @JsonProperty("direction")
-        @NonNull
         String direction;
 
         @JsonProperty("operator")
@@ -84,7 +87,6 @@ public class BusStopDeparturesResponse {
         String operator;
 
         @JsonProperty("date")
-        @NonNull
         LocalDate date;
 
         @JsonProperty("expected_departure_date")
@@ -105,15 +107,27 @@ public class BusStopDeparturesResponse {
         String source;
 
         @JsonProperty("dir")
-        @NonNull
         String dir;
 
         @JsonProperty("id")
-        @NonNull
         String id;
 
         @JsonProperty("operator_name")
-        @NonNull
         String operatorName;
+    }
+
+    @lombok.Builder(builderClassName = "Builder", builderMethodName = "newBuilder")
+    @Value
+    @JsonDeserialize(builder = Location.Builder.class)
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class Location {
+
+        @JsonProperty("type")
+        @NonNull
+        String type;
+
+        @JsonProperty("coordinates")
+        @NonNull
+        List<BigDecimal> coordinates;
     }
 }
