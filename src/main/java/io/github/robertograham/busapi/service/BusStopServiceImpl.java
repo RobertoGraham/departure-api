@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Service
-final class BusServiceImpl implements BusService {
+final class BusStopServiceImpl implements BusStopService {
 
     private final TransportApiClient transportApiClient;
 
@@ -22,7 +22,7 @@ final class BusServiceImpl implements BusService {
     private final BusStopDeparturesFactory busStopDeparturesFactory;
 
     @Autowired
-    public BusServiceImpl(final TransportApiClient transportApiClient, final BusStopFactory busStopFactory, final BusStopDeparturesFactory busStopDeparturesFactory) {
+    BusStopServiceImpl(final TransportApiClient transportApiClient, final BusStopFactory busStopFactory, final BusStopDeparturesFactory busStopDeparturesFactory) {
         this.transportApiClient = transportApiClient;
         this.busStopFactory = busStopFactory;
         this.busStopDeparturesFactory = busStopDeparturesFactory;
@@ -31,8 +31,8 @@ final class BusServiceImpl implements BusService {
     @Override
     public List<BusStop> getNearbyBusStops(final BigDecimal longitude, final BigDecimal latitude) {
         final PlacesResponse placesResponse = transportApiClient.places(latitude, longitude, null, null, null, null, null, TypeSet.newBuilder()
-                .type(Type.BUS_STOP)
-                .build());
+            .type(Type.BUS_STOP)
+            .build());
         return busStopFactory.createBusStopList(placesResponse);
     }
 

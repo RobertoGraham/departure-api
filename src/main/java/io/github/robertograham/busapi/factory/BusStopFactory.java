@@ -20,10 +20,6 @@ public final class BusStopFactory {
 
     public BusStop createBusStop(final BusStopDeparturesResponse busStopDeparturesResponse) {
         final StringBuilder nameBuilder = new StringBuilder(busStopDeparturesResponse.getStopName());
-        if (!StringUtils.isEmpty(busStopDeparturesResponse.getIndicator()))
-            nameBuilder.append(" (")
-                    .append(busStopDeparturesResponse.getIndicator())
-                    .append(")");
         if (!StringUtils.isEmpty(busStopDeparturesResponse.getBearing()))
             nameBuilder.append(" - ")
                     .append(busStopDeparturesResponse.getBearing())

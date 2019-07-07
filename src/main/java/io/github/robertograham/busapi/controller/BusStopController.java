@@ -2,7 +2,7 @@ package io.github.robertograham.busapi.controller;
 
 import io.github.robertograham.busapi.dto.BusStop;
 import io.github.robertograham.busapi.dto.BusStopDepartures;
-import io.github.robertograham.busapi.service.BusService;
+import io.github.robertograham.busapi.service.BusStopService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -12,23 +12,23 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/busStops")
-final class BusController {
+final class BusStopController {
 
-    private final BusService busService;
+    private final BusStopService busStopService;
 
     @Autowired
-    public BusController(final BusService busService) {
-        this.busService = busService;
+    BusStopController(final BusStopService busStopService) {
+        this.busStopService = busStopService;
     }
 
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     private List<BusStop> getNearbyBusStops(@RequestParam final BigDecimal latitude,
                                             @RequestParam final BigDecimal longitude) {
-        return busService.getNearbyBusStops(longitude, latitude);
+        return busStopService.getNearbyBusStops(longitude, latitude);
     }
 
     @GetMapping(value = "/{busStopId}/departures", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    private BusStopDepartures getBusStopDeparutes(@PathVariable final String busStopId) {
-        return busService.getBusStopDepartures(busStopId);
+    private BusStopDepartures getBusStopDepartures(@PathVariable final String busStopId) {
+        return busStopService.getBusStopDepartures(busStopId);
     }
 }
