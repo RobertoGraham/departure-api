@@ -7,12 +7,12 @@ pipelines:
           name: Deploy to Heroku
           deployment: production
           script:
-            - curl -X PATCH
+            - curl --request PATCH
               --silent
               --show-error
               --fail
               https://api.heroku.com/apps/bus-api-terraform-backend/config-vars
-              -d '{"BUS_API_SERVER_COMMIT":"'"$BITBUCKET_COMMIT"'"}'
-              -H "Content-Type:application/json"
-              -H "Authorization:Bearer $HEROKU_API_KEY"
-              -H "Accept:application/vnd.heroku+json; version=3"
+              --data '{"BUS_API_SERVER_COMMIT":"'"$BITBUCKET_COMMIT"'"}'
+              --header "Content-Type:application/json"
+              --header "Authorization:Bearer $HEROKU_API_KEY"
+              --header "Accept:application/vnd.heroku+json; version=3"
