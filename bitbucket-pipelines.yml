@@ -7,6 +7,8 @@ pipelines:
           script:
             - apk --no-cache add curl
             - curl -sSfX PATCH
+              -o /dev/null
+              -w '%{http_code}'
               -d '{"BUS_API_SERVER_COMMIT":"'"$BITBUCKET_COMMIT"'"}'
               -H "Content-Type:application/json"
               -H "Authorization:Bearer $HEROKU_API_KEY"
