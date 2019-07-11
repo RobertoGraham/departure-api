@@ -1,18 +1,14 @@
-clone:
-  depth: full
+image: alpine:3.9.4
 pipelines:
   branches:
     master:
       - step:
-          name: Deploy to Heroku
-          deployment: production
+          name: Update BUS_API_SERVER_COMMIT config var in bus-api-terraform-backend
           script:
-            - curl --request PATCH
-              --silent
-              --show-error
-              --fail
+            - apk --no-cache add curl
+            - curl -sSfX PATCH
+              -d '{"BUS_API_SERVER_COMMIT":"'"$BITBUCKET_COMMIT"'"}'
+              -H "Content-Type:application/json"
+              -H "Authorization:Bearer $HEROKU_API_KEY"
+              -H "Accept:application/vnd.heroku+json; version=3"
               https://api.heroku.com/apps/bus-api-terraform-backend/config-vars
-              --data '{"BUS_API_SERVER_COMMIT":"'"$BITBUCKET_COMMIT"'"}'
-              --header "Content-Type:application/json"
-              --header "Authorization:Bearer $HEROKU_API_KEY"
-              --header "Accept:application/vnd.heroku+json; version=3"
