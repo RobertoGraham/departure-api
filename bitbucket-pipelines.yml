@@ -1,11 +1,11 @@
-image: alpine:3.10.1
+image: maven:3.6.1-jdk-11-slim
 pipelines:
   branches:
     master:
       - step:
-          name: Update BUS_API_SERVER_COMMIT config var in bus-api-terraform-backend
+          name: Test project and update BUS_API_SERVER_COMMIT config var in bus-api-terraform-backend
           script:
-            - apk --no-cache add curl
+            - mvn -e -B test
             - curl -sSfX PATCH
               -o /dev/null
               -d '{"BUS_API_SERVER_COMMIT":"'"$BITBUCKET_COMMIT"'"}'
