@@ -4,6 +4,8 @@ pipelines:
     master:
       - step:
           name: Test project and update BUS_API_SERVER_COMMIT config var in bus-api-terraform-backend
+          caches:
+            - maven
           script:
             - mvn -e -B test
             - curl -sSfX PATCH
