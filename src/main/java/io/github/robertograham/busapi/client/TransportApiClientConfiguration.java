@@ -1,13 +1,10 @@
 package io.github.robertograham.busapi.client;
 
 import feign.RequestInterceptor;
-import feign.RequestTemplate;
-import feign.codec.ErrorDecoder;
 import io.github.robertograham.busapi.client.dto.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.openfeign.FeignFormatterRegistrar;
 import org.springframework.context.annotation.Bean;
-import org.springframework.format.FormatterRegistry;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -20,7 +17,7 @@ final class TransportApiClientConfiguration {
     @Bean
     private RequestInterceptor requestInterceptor(@Value("${transportApiClient.applicationId}") final String applicationId,
                                                   @Value("${transportApiClient.applicationKey}") final String applicationKey) {
-        return (final RequestTemplate requestTemplate) -> {
+        return (final var requestTemplate) -> {
             requestTemplate.query("app_id", applicationId);
             requestTemplate.query("app_key", applicationKey);
         };
@@ -28,7 +25,7 @@ final class TransportApiClientConfiguration {
 
     @Bean
     private FeignFormatterRegistrar feignFormatterRegistrar() {
-        return (final FormatterRegistry formatterRegistry) -> {
+        return (final var formatterRegistry) -> {
             formatterRegistry.addConverter(Group.class, String.class, Group::getValue);
             formatterRegistry.addConverter(NextBuses.class, String.class, NextBuses::getValue);
             formatterRegistry.addConverter(Stops.class, String.class, Stops::getValue);
@@ -39,10 +36,5 @@ final class TransportApiClientConfiguration {
             formatterRegistry.addConverter(LocalDate.class, String.class, DateTimeFormatter.ofPattern("yyyy-MM-dd")::format);
             formatterRegistry.addConverter(LocalTime.class, String.class, DateTimeFormatter.ofPattern("HH:mm")::format);
         };
-    }
-
-    @Bean
-    private ErrorDecoder errorDecoder() {
-        return new ResponseStatusExceptionErrorDecoder();
     }
 }

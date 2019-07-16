@@ -7,7 +7,6 @@ import io.github.robertograham.busapi.dto.BusStop;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,19 +18,19 @@ public final class BusStopFactory {
     }
 
     public BusStop createBusStop(final BusStopDeparturesResponse busStopDeparturesResponse) {
-        final StringBuilder nameBuilder = new StringBuilder(busStopDeparturesResponse.getStopName());
+        final var nameStringBuilder = new StringBuilder(busStopDeparturesResponse.getStopName());
         if (!StringUtils.isEmpty(busStopDeparturesResponse.getBearing()))
-            nameBuilder.append(" - ")
+            nameStringBuilder.append(" - ")
                     .append(busStopDeparturesResponse.getBearing())
                     .append("-bound");
-        final BusStop.Builder busStopBuilder = BusStop.newBuilder()
+        final var busStopBuilder = BusStop.newBuilder()
                 .id(busStopDeparturesResponse.getAtcoCode())
-                .name(nameBuilder.toString())
+                .name(nameStringBuilder.toString())
                 .locality(busStopDeparturesResponse.getLocality());
-        final List<BigDecimal> coordinates = busStopDeparturesResponse.getLocation().getCoordinates();
-        if (coordinates.size() == 2)
-            return busStopBuilder.longitude(coordinates.get(0))
-                    .latitude(coordinates.get(1))
+        final var coordinatesBigDecimalList = busStopDeparturesResponse.getLocation().getCoordinates();
+        if (coordinatesBigDecimalList.size() == 2)
+            return busStopBuilder.longitude(coordinatesBigDecimalList.get(0))
+                    .latitude(coordinatesBigDecimalList.get(1))
                     .build();
         return busStopBuilder.build();
     }
