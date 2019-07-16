@@ -6,7 +6,7 @@ WORKDIR $SOURCES_DIR
 COPY pom.xml .
 RUN mvn -e -B dependency:go-offline
 COPY src ./src
-RUN mvn -e -B package
+RUN mvn -e -B package -DskipTests
 
 FROM adoptopenjdk/openjdk11-openj9:x86_64-alpine-jre-11.0.3_7_openj9-0.14.3
 ARG SOURCES_DIR

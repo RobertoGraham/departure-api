@@ -1,9 +1,6 @@
-/.idea
-/.mvn
-/target
+.idea
+/target/
 .dockerignore
 .gitignore
 *.iml
 Dockerfile
-mvnw
-mvnw.cmd
