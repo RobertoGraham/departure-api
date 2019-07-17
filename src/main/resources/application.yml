@@ -9,9 +9,7 @@ feign:
   client:
     config:
       transportApiClient:
-        loggerLevel: full
-
-debug: true
+        loggerLevel: basic
 
 logging:
   level:
@@ -20,6 +18,8 @@ logging:
 spring:
   jackson:
     default-property-inclusion: NON_NULL
+  main:
+    banner-mode: "off"
 
 server:
   port: ${PORT:8080}
