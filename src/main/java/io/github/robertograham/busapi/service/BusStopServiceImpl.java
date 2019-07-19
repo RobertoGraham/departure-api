@@ -6,9 +6,9 @@ import io.github.robertograham.busapi.client.dto.NextBuses;
 import io.github.robertograham.busapi.client.dto.Type;
 import io.github.robertograham.busapi.client.dto.TypeSet;
 import io.github.robertograham.busapi.dto.BusStop;
-import io.github.robertograham.busapi.dto.BusStopDepartures;
-import io.github.robertograham.busapi.factory.BusStopDeparturesFactory;
+import io.github.robertograham.busapi.dto.Departure;
 import io.github.robertograham.busapi.factory.BusStopFactory;
+import io.github.robertograham.busapi.factory.DepartureFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,13 +23,13 @@ final class BusStopServiceImpl implements BusStopService {
 
     private final BusStopFactory busStopFactory;
 
-    private final BusStopDeparturesFactory busStopDeparturesFactory;
+    private final DepartureFactory departureFactory;
 
     @Autowired
-    BusStopServiceImpl(final TransportApiClient transportApiClient, final BusStopFactory busStopFactory, final BusStopDeparturesFactory busStopDeparturesFactory) {
+    BusStopServiceImpl(final TransportApiClient transportApiClient, final BusStopFactory busStopFactory, final DepartureFactory departureFactory) {
         this.transportApiClient = transportApiClient;
         this.busStopFactory = busStopFactory;
-        this.busStopDeparturesFactory = busStopDeparturesFactory;
+        this.departureFactory = departureFactory;
     }
 
     @Override
@@ -52,8 +52,8 @@ final class BusStopServiceImpl implements BusStopService {
     }
 
     @Override
-    public BusStopDepartures getBusStopDepartures(final String busStopId) {
+    public List<Departure> getDepartures(final String busStopId) {
         final var busStopDeparturesResponse = transportApiClient.busStopDepartures(busStopId, Group.NO, 300, NextBuses.NO);
-        return busStopDeparturesFactory.createBusStopDepartures(busStopDeparturesResponse);
+        return departureFactory.createDepartureList(busStopDeparturesResponse);
     }
 }

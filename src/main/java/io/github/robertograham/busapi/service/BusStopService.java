@@ -1,7 +1,7 @@
 package io.github.robertograham.busapi.service;
 
 import io.github.robertograham.busapi.dto.BusStop;
-import io.github.robertograham.busapi.dto.BusStopDepartures;
+import io.github.robertograham.busapi.dto.Departure;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -13,5 +13,5 @@ public interface BusStopService {
 
     Optional<BusStop> getBusStop(String busStopId);
 
-    BusStopDepartures getBusStopDepartures(String busStopId);
+    List<Departure> getDepartures(String busStopId);
 }

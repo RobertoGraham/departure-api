@@ -2,7 +2,7 @@ package io.github.robertograham.busapi.controller;
 
 import feign.FeignException;
 import io.github.robertograham.busapi.dto.BusStop;
-import io.github.robertograham.busapi.dto.BusStopDepartures;
+import io.github.robertograham.busapi.dto.Departure;
 import io.github.robertograham.busapi.service.BusStopService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,9 +45,9 @@ final class BusStopController {
     }
 
     @GetMapping(value = "/{busStopId}/departures", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    private BusStopDepartures getBusStopDepartures(@PathVariable final String busStopId) {
+    private List<Departure> getBusStopDepartures(@PathVariable final String busStopId) {
         try {
-            return busStopService.getBusStopDepartures(busStopId);
+            return busStopService.getDepartures(busStopId);
         } catch (final FeignException feignException) {
             if (HttpStatus.NOT_FOUND.value() == feignException.status())
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("No bus stop found for id: %s", busStopId), feignException);
