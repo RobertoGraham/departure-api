@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 final class BusStopServiceImpl implements BusStopService {
@@ -37,6 +38,17 @@ final class BusStopServiceImpl implements BusStopService {
                 .type(Type.BUS_STOP)
                 .build());
         return busStopFactory.createBusStopList(placesResponse);
+    }
+
+    @Override
+    public Optional<BusStop> getBusStop(final String busStopId) {
+        final var placesResponse = transportApiClient.places(null, null, null, null, null, null, busStopId, TypeSet.newBuilder()
+                .type(Type.BUS_STOP)
+                .build());
+        return placesResponse.getMember().stream()
+                .filter((final var member) -> busStopId.equals(member.getAtcoCode()))
+                .findFirst()
+                .map(busStopFactory::createBusStop);
     }
 
     @Override

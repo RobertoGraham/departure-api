@@ -42,7 +42,7 @@ public final class BusStopFactory {
                 .collect(Collectors.toList());
     }
 
-    private BusStop createBusStop(final PlacesResponse.Member member) {
+    public BusStop createBusStop(final PlacesResponse.Member member) {
         return BusStop.newBuilder()
                 .id(member.getAtcoCode())
                 .name(member.getName())

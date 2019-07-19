@@ -34,6 +34,16 @@ final class BusStopController {
         }
     }
 
+    @GetMapping(value = "/{busStopId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    private BusStop getBusStop(@PathVariable final String busStopId) {
+        try {
+            return busStopService.getBusStop(busStopId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("No bus stop found for id: %s", busStopId)));
+        } catch (final FeignException feignException) {
+            throw createBadGatewayResponseStatusException();
+        }
+    }
+
     @GetMapping(value = "/{busStopId}/departures", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     private BusStopDepartures getBusStopDepartures(@PathVariable final String busStopId) {
         try {
