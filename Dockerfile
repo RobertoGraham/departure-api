@@ -8,7 +8,7 @@ RUN mvn -e -B dependency:go-offline
 COPY src ./src
 RUN mvn -e -B package -DskipTests
 
-FROM adoptopenjdk/openjdk11-openj9:x86_64-alpine-jre-11.0.3_7_openj9-0.14.3
+FROM azul/zulu-openjdk-alpine:11.0.3-jre
 ARG SOURCES_DIR
 ENV PORT=8080
 WORKDIR /app
