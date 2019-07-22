@@ -3,9 +3,6 @@ package io.github.robertograham.busapi.dto;
 import lombok.NonNull;
 import lombok.Value;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-
 @lombok.Builder(builderClassName = "Builder", builderMethodName = "newBuilder")
 @Value
 public class Departure {
@@ -19,11 +16,7 @@ public class Departure {
     @NonNull
     String operator;
 
-    @NonNull
-    LocalDate date;
-
-    @NonNull
-    LocalTime time;
+    long epochSecond;
 
     @NonNull
     String operatorName;

@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 @Component
 public final class DepartureFactory {
 
+    private static final ZoneId ZONE_ID = ZoneId.of("Europe/London");
+
     public List<Departure> createDepartureList(final BusStopDeparturesResponse busStopDeparturesResponse) {
         return createDepartureList(busStopDeparturesResponse.getDepartures());
     }
@@ -26,9 +28,12 @@ public final class DepartureFactory {
     }
 
     private Departure createDeparture(final BusStopDeparturesResponse.Departure departure) {
+        final var localDate = Optional.ofNullable(departure.getExpectedDepartureDate())
+                .or(() -> Optional.ofNullable(departure.getDate()))
+                .orElseGet(() -> LocalDate.now(ZONE_ID));
+        final var localTime = departure.getBestDepartureEstimate();
         return Departure.newBuilder()
-                .date(Optional.ofNullable(departure.getExpectedDepartureDate()).or(() -> Optional.ofNullable(departure.getDate())).orElseGet(() -> LocalDate.now(ZoneId.of("Europe/London"))))
-                .time(departure.getBestDepartureEstimate())
+                .epochSecond(localDate.toEpochSecond(localTime, ZONE_ID.getRules().getOffset(localDate.atTime(localTime))))
                 .direction(departure.getDir())
                 .destination(departure.getDirection())
                 .line(departure.getLine())
