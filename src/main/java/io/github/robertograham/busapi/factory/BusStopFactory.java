@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 public final class BusStopFactory {
 
     public List<BusStop> createBusStopList(final PlacesResponse placesResponse) {
-        return createBusStopList(placesResponse.getMember());
+        return createBusStopList(placesResponse.getMembers());
     }
 
     private List<BusStop> createBusStopList(final List<PlacesResponse.Member> members) {

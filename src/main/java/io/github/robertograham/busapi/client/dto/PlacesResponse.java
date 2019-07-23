@@ -31,7 +31,7 @@ public class PlacesResponse {
 
     @JsonProperty("member")
     @NonNull
-    List<Member> member;
+    List<Member> members;
 
     @lombok.Builder(builderClassName = "Builder", builderMethodName = "newBuilder")
     @Value
