@@ -6,6 +6,7 @@ import io.github.robertograham.busapi.dto.BusStop;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
@@ -23,6 +24,9 @@ public final class BusStopHelper {
     }
 
     public BusStop createBusStop(final PlacesResponse.Member member) {
+        Objects.requireNonNull(member, "member cannot be null");
+        if (!Type.BUS_STOP.getValue().equals(member.getType()))
+            throw new IllegalArgumentException(String.format("Expected member with type \"%s\" got \"%s\" instead", Type.BUS_STOP.getValue(), member.getType()));
         return BusStop.newBuilder()
                 .id(member.getAtcoCode())
                 .name(member.getName())
