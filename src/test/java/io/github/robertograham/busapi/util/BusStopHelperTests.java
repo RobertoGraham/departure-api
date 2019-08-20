@@ -1,4 +1,4 @@
-package io.github.robertograham.busapi.factory;
+package io.github.robertograham.busapi.util;
 
 import io.github.robertograham.busapi.client.dto.PlacesResponse;
 import io.github.robertograham.busapi.client.dto.Type;
@@ -11,13 +11,13 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
-class BusStopFactoryTests {
+class BusStopHelperTests {
 
-    private BusStopFactory busStopFactory;
+    private BusStopHelper busStopHelper;
 
     @BeforeEach
     void setUp() {
-        busStopFactory = new BusStopFactory();
+        busStopHelper = new BusStopHelper();
     }
 
     @Test
@@ -41,7 +41,7 @@ class BusStopFactoryTests {
                 .name(name)
                 .type(type)
                 .build();
-        final var busStop = busStopFactory.createBusStop(member);
+        final var busStop = busStopHelper.createBusStop(member);
         assertThat(busStop.getId()).isEqualTo(atcoCode);
         assertThat(busStop.getLatitude()).isEqualTo(latitude);
         assertThat(busStop.getLocality()).isEqualTo(description);
@@ -52,7 +52,7 @@ class BusStopFactoryTests {
     @Test
     @DisplayName("a null pointer exception is thrown when createBusStop is passed a null value")
     void createBusStopThrowsNullPointerException() {
-        assertThatNullPointerException().isThrownBy(() -> busStopFactory.createBusStop(null));
+        assertThatNullPointerException().isThrownBy(() -> busStopHelper.createBusStop(null));
     }
 
     @TestFactory
@@ -61,7 +61,7 @@ class BusStopFactoryTests {
                 .filter(type -> Type.BUS_STOP != type)
                 .map(type -> dynamicTest(String.format("an illegal argument exception is thrown when createBusStop is passed a value with \"%s\" set for its type field", type.getValue()),
                         () -> assertThatIllegalArgumentException().isThrownBy(() ->
-                                busStopFactory.createBusStop(PlacesResponse.Member.newBuilder()
+                                busStopHelper.createBusStop(PlacesResponse.Member.newBuilder()
                                         .accuracy(0)
                                         .latitude(BigDecimal.ZERO)
                                         .longitude(BigDecimal.ZERO)
