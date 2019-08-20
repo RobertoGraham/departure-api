@@ -4,7 +4,8 @@ import feign.FeignException;
 import io.github.robertograham.busapi.dto.BusStop;
 import io.github.robertograham.busapi.dto.Departure;
 import io.github.robertograham.busapi.service.BusStopService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -15,18 +16,15 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/busStops")
+@RequiredArgsConstructor
 final class BusStopController {
 
+    @NonNull
     private final BusStopService busStopService;
 
-    @Autowired
-    BusStopController(final BusStopService busStopService) {
-        this.busStopService = busStopService;
-    }
-
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    private List<BusStop> getNearbyBusStops(@RequestParam final BigDecimal latitude,
-                                            @RequestParam final BigDecimal longitude) {
+    public List<BusStop> getNearbyBusStops(@RequestParam final BigDecimal latitude,
+                                           @RequestParam final BigDecimal longitude) {
         try {
             return busStopService.getNearbyBusStops(longitude, latitude);
         } catch (final FeignException feignException) {
@@ -35,7 +33,7 @@ final class BusStopController {
     }
 
     @GetMapping(value = "/{busStopId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    private BusStop getBusStop(@PathVariable final String busStopId) {
+    public BusStop getBusStop(@PathVariable final String busStopId) {
         try {
             return busStopService.getBusStop(busStopId)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("No bus stop found for id: %s", busStopId)));
@@ -45,7 +43,7 @@ final class BusStopController {
     }
 
     @GetMapping(value = "/{busStopId}/departures", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    private List<Departure> getBusStopDepartures(@PathVariable final String busStopId) {
+    public List<Departure> getBusStopDepartures(@PathVariable final String busStopId) {
         try {
             return busStopService.getDepartures(busStopId);
         } catch (final FeignException feignException) {

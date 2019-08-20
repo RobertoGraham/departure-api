@@ -1,4 +1,4 @@
-package io.github.robertograham.busapi.factory;
+package io.github.robertograham.busapi.util;
 
 import io.github.robertograham.busapi.client.dto.BusStopDeparturesResponse;
 import io.github.robertograham.busapi.dto.Departure;
@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
-public final class DepartureFactory {
+public final class DepartureHelper {
 
     private static final ZoneId ZONE_ID = ZoneId.of("Europe/London");
 

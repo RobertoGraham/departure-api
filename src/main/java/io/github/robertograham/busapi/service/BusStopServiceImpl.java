@@ -4,9 +4,10 @@ import io.github.robertograham.busapi.client.TransportApiClient;
 import io.github.robertograham.busapi.client.dto.*;
 import io.github.robertograham.busapi.dto.BusStop;
 import io.github.robertograham.busapi.dto.Departure;
-import io.github.robertograham.busapi.factory.BusStopFactory;
-import io.github.robertograham.busapi.factory.DepartureFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.github.robertograham.busapi.util.BusStopHelper;
+import io.github.robertograham.busapi.util.DepartureHelper;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -14,27 +15,24 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 final class BusStopServiceImpl implements BusStopService {
 
+    @NonNull
     private final TransportApiClient transportApiClient;
 
-    private final BusStopFactory busStopFactory;
+    @NonNull
+    private final BusStopHelper busStopHelper;
 
-    private final DepartureFactory departureFactory;
-
-    @Autowired
-    BusStopServiceImpl(final TransportApiClient transportApiClient, final BusStopFactory busStopFactory, final DepartureFactory departureFactory) {
-        this.transportApiClient = transportApiClient;
-        this.busStopFactory = busStopFactory;
-        this.departureFactory = departureFactory;
-    }
+    @NonNull
+    private final DepartureHelper departureHelper;
 
     @Override
     public List<BusStop> getNearbyBusStops(final BigDecimal longitude, final BigDecimal latitude) {
         final var placesResponse = transportApiClient.places(latitude, longitude, null, null, null, null, null, TypeSet.newBuilder()
                 .type(Type.BUS_STOP)
                 .build());
-        return busStopFactory.createBusStopList(placesResponse);
+        return busStopHelper.createBusStopList(placesResponse);
     }
 
     @Override
@@ -46,12 +44,12 @@ final class BusStopServiceImpl implements BusStopService {
                 .filter((final PlacesResponse.Member member) -> Type.BUS_STOP.getValue().equals(member.getType()))
                 .filter((final var member) -> busStopId.equals(member.getAtcoCode()))
                 .findFirst()
-                .map(busStopFactory::createBusStop);
+                .map(busStopHelper::createBusStop);
     }
 
     @Override
     public List<Departure> getDepartures(final String busStopId) {
         final var busStopDeparturesResponse = transportApiClient.busStopDepartures(busStopId, Group.NO, 300, NextBuses.NO);
-        return departureFactory.createDepartureList(busStopDeparturesResponse);
+        return departureHelper.createDepartureList(busStopDeparturesResponse);
     }
 }

@@ -1,4 +1,4 @@
-package io.github.robertograham.busapi.factory;
+package io.github.robertograham.busapi.util;
 
 import io.github.robertograham.busapi.client.dto.PlacesResponse;
 import io.github.robertograham.busapi.client.dto.Type;
@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public final class BusStopFactory {
+public final class BusStopHelper {
 
     public List<BusStop> createBusStopList(final PlacesResponse placesResponse) {
         return createBusStopList(placesResponse.getMembers());

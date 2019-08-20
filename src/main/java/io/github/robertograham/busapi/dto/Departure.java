@@ -1,9 +1,10 @@
 package io.github.robertograham.busapi.dto;
 
+import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
-@lombok.Builder(builderClassName = "Builder", builderMethodName = "newBuilder")
+@Builder(builderClassName = "Builder", builderMethodName = "newBuilder")
 @Value
 public class Departure {
 
