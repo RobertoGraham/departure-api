@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
-@Builder(builderClassName = "Builder", builderMethodName = "newBuilder")
+@Builder
 @Value
 public class Departure {
 

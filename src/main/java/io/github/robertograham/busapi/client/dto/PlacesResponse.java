@@ -11,9 +11,9 @@ import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-@Builder(builderClassName = "Builder", builderMethodName = "newBuilder")
+@Builder
 @Value
-@JsonDeserialize(builder = PlacesResponse.Builder.class)
+@JsonDeserialize(builder = PlacesResponse.PlacesResponseBuilder.class)
 @JsonPOJOBuilder(withPrefix = "")
 public class PlacesResponse {
 
@@ -33,9 +33,9 @@ public class PlacesResponse {
     @NonNull
     List<Member> members;
 
-    @lombok.Builder(builderClassName = "Builder", builderMethodName = "newBuilder")
+    @Builder
     @Value
-    @JsonDeserialize(builder = Member.Builder.class)
+    @JsonDeserialize(builder = Member.MemberBuilder.class)
     @JsonPOJOBuilder(withPrefix = "")
     public static class Member {
 

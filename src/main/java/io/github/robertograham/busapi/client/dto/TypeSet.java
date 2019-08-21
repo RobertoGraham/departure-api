@@ -7,7 +7,7 @@ import lombok.Value;
 
 import java.util.Set;
 
-@Builder(builderClassName = "Builder", builderMethodName = "newBuilder")
+@Builder
 @Value
 public class TypeSet {
 

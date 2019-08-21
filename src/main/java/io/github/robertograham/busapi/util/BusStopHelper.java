@@ -27,7 +27,7 @@ public final class BusStopHelper {
         Objects.requireNonNull(member, "member cannot be null");
         if (!Type.BUS_STOP.getValue().equals(member.getType()))
             throw new IllegalArgumentException(String.format("Expected member with type \"%s\" got \"%s\" instead", Type.BUS_STOP.getValue(), member.getType()));
-        return BusStop.newBuilder()
+        return BusStop.builder()
                 .id(member.getAtcoCode())
                 .name(member.getName())
                 .locality(member.getDescription())

@@ -31,7 +31,7 @@ class BusStopHelperTests {
         final var longitude = BigDecimal.ONE;
         final var name = "name";
         final var type = Type.BUS_STOP.getValue();
-        final var member = PlacesResponse.Member.newBuilder()
+        final var member = PlacesResponse.Member.builder()
                 .accuracy(accuracy)
                 .atcoCode(atcoCode)
                 .description(description)
@@ -61,7 +61,7 @@ class BusStopHelperTests {
                 .filter(type -> Type.BUS_STOP != type)
                 .map(type -> dynamicTest(String.format("an illegal argument exception is thrown when createBusStop is passed a value with \"%s\" set for its type field", type.getValue()),
                         () -> assertThatIllegalArgumentException().isThrownBy(() ->
-                                busStopHelper.createBusStop(PlacesResponse.Member.newBuilder()
+                                busStopHelper.createBusStop(PlacesResponse.Member.builder()
                                         .accuracy(0)
                                         .latitude(BigDecimal.ZERO)
                                         .longitude(BigDecimal.ZERO)

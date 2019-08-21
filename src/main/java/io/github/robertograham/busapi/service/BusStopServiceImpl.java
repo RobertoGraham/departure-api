@@ -29,7 +29,7 @@ final class BusStopServiceImpl implements BusStopService {
 
     @Override
     public List<BusStop> getNearbyBusStops(final BigDecimal longitude, final BigDecimal latitude) {
-        final var placesResponse = transportApiClient.places(latitude, longitude, null, null, null, null, null, TypeSet.newBuilder()
+        final var placesResponse = transportApiClient.places(latitude, longitude, null, null, null, null, null, TypeSet.builder()
                 .type(Type.BUS_STOP)
                 .build());
         return busStopHelper.createBusStopList(placesResponse);
@@ -37,7 +37,7 @@ final class BusStopServiceImpl implements BusStopService {
 
     @Override
     public Optional<BusStop> getBusStop(final String busStopId) {
-        final var placesResponse = transportApiClient.places(null, null, null, null, null, null, busStopId, TypeSet.newBuilder()
+        final var placesResponse = transportApiClient.places(null, null, null, null, null, null, busStopId, TypeSet.builder()
                 .type(Type.BUS_STOP)
                 .build());
         return placesResponse.getMembers().stream()
