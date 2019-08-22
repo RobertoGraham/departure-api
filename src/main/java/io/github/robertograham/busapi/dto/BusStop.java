@@ -6,7 +6,7 @@ import lombok.Value;
 
 import java.math.BigDecimal;
 
-@Builder
+@Builder(builderMethodName = "newBuilder", builderClassName = "Builder")
 @Value
 public class BusStop {
 

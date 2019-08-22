@@ -11,9 +11,9 @@ import lombok.Value;
 import java.math.BigDecimal;
 import java.util.List;
 
-@Builder
+@Builder(builderMethodName = "newBuilder", builderClassName = "Builder")
 @Value
-@JsonDeserialize(builder = BusServiceResponse.BusServiceResponseBuilder.class)
+@JsonDeserialize(builder = BusServiceResponse.Builder.class)
 @JsonPOJOBuilder(withPrefix = "")
 @JsonIgnoreProperties(value = {"id"}, allowSetters = true)
 public class BusServiceResponse {
@@ -50,9 +50,9 @@ public class BusServiceResponse {
     @NonNull
     String acknowledgements;
 
-    @Builder
+    @lombok.Builder(builderMethodName = "newBuilder", builderClassName = "Builder")
     @Value
-    @JsonDeserialize(builder = Operator.OperatorBuilder.class)
+    @JsonDeserialize(builder = Operator.Builder.class)
     @JsonPOJOBuilder(withPrefix = "")
     public static class Operator {
 
@@ -65,9 +65,9 @@ public class BusServiceResponse {
         String name;
     }
 
-    @Builder
+    @lombok.Builder(builderMethodName = "newBuilder", builderClassName = "Builder")
     @Value
-    @JsonDeserialize(builder = Direction.DirectionBuilder.class)
+    @JsonDeserialize(builder = Direction.Builder.class)
     @JsonPOJOBuilder(withPrefix = "")
     public static class Direction {
 
@@ -79,9 +79,9 @@ public class BusServiceResponse {
         @NonNull
         Destination destination;
 
-        @Builder
+        @lombok.Builder(builderMethodName = "newBuilder", builderClassName = "Builder")
         @Value
-        @JsonDeserialize(builder = Destination.DestinationBuilder.class)
+        @JsonDeserialize(builder = Destination.Builder.class)
         @JsonPOJOBuilder(withPrefix = "")
         public static class Destination {
 
@@ -91,9 +91,9 @@ public class BusServiceResponse {
         }
     }
 
-    @Builder
+    @lombok.Builder(builderMethodName = "newBuilder", builderClassName = "Builder")
     @Value
-    @JsonDeserialize(builder = Centroid.CentroidBuilder.class)
+    @JsonDeserialize(builder = Centroid.Builder.class)
     @JsonPOJOBuilder(withPrefix = "")
     public static class Centroid {
 

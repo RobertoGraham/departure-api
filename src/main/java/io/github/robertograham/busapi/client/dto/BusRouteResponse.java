@@ -14,9 +14,9 @@ import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-@Builder
+@Builder(builderMethodName = "newBuilder", builderClassName = "Builder")
 @Value
-@JsonDeserialize(builder = BusRouteResponse.BusRouteResponseBuilder.class)
+@JsonDeserialize(builder = BusRouteResponse.Builder.class)
 @JsonPOJOBuilder(withPrefix = "")
 @JsonIgnoreProperties(value = {"id"}, allowSetters = true)
 public class BusRouteResponse {
@@ -57,9 +57,9 @@ public class BusRouteResponse {
     @NonNull
     List<Stop> stops;
 
-    @Builder
+    @lombok.Builder(builderMethodName = "newBuilder", builderClassName = "Builder")
     @Value
-    @JsonDeserialize(builder = Stop.StopBuilder.class)
+    @JsonDeserialize(builder = Stop.Builder.class)
     @JsonPOJOBuilder(withPrefix = "")
     public static class Stop {
 
@@ -110,9 +110,9 @@ public class BusRouteResponse {
         @JsonProperty("next")
         Next next;
 
-        @Builder
+        @lombok.Builder(builderMethodName = "newBuilder", builderClassName = "Builder")
         @Value
-        @JsonDeserialize(builder = Next.NextBuilder.class)
+        @JsonDeserialize(builder = Next.Builder.class)
         @JsonPOJOBuilder(withPrefix = "")
         public static class Next {
 

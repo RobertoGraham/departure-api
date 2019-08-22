@@ -8,7 +8,8 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 class BusStopHelperTests {
@@ -31,7 +32,7 @@ class BusStopHelperTests {
         final var longitude = BigDecimal.ONE;
         final var name = "name";
         final var type = Type.BUS_STOP.getValue();
-        final var member = PlacesResponse.Member.builder()
+        final var member = PlacesResponse.Member.newBuilder()
                 .accuracy(accuracy)
                 .atcoCode(atcoCode)
                 .description(description)
@@ -61,7 +62,7 @@ class BusStopHelperTests {
                 .filter(type -> Type.BUS_STOP != type)
                 .map(type -> dynamicTest(String.format("an illegal argument exception is thrown when createBusStop is passed a value with \"%s\" set for its type field", type.getValue()),
                         () -> assertThatIllegalArgumentException().isThrownBy(() ->
-                                busStopHelper.createBusStop(PlacesResponse.Member.builder()
+                                busStopHelper.createBusStop(PlacesResponse.Member.newBuilder()
                                         .accuracy(0)
                                         .latitude(BigDecimal.ZERO)
                                         .longitude(BigDecimal.ZERO)

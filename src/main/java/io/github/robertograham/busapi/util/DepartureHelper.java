@@ -32,7 +32,7 @@ public final class DepartureHelper {
                 .or(() -> Optional.ofNullable(departure.getDate()))
                 .orElseGet(() -> LocalDate.now(ZONE_ID));
         final var localTime = departure.getBestDepartureEstimate();
-        return Departure.builder()
+        return Departure.newBuilder()
                 .epochSecond(localDate.toEpochSecond(localTime, ZONE_ID.getRules().getOffset(localDate.atTime(localTime))))
                 .direction(departure.getDir())
                 .destination(departure.getDirection())
