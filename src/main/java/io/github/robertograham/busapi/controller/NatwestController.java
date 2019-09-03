@@ -12,6 +12,6 @@ final class NatwestController {
     @CrossOrigin({"*"})
     @PostMapping
     public String natwest() {
-        return "OK";
+        return "{\"Data\":{\"CreationDateTime\":\"2019-07-30T12:59:33.622Z\",\"MerchantAcknowledgementId\":\"23erziEyqsAOiNay2sOVdRd4Rwexxxxssss\"}}";
     }
 }
