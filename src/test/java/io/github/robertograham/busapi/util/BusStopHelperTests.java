@@ -30,7 +30,6 @@ class BusStopHelperTests {
         final var latitude = BigDecimal.ZERO;
         final var longitude = BigDecimal.ONE;
         final var name = "name";
-        final var type = Type.BUS_STOP.getValue();
         final var member = PlacesResponse.Member.newBuilder()
                 .accuracy(accuracy)
                 .atcoCode(atcoCode)
@@ -39,7 +38,7 @@ class BusStopHelperTests {
                 .latitude(latitude)
                 .longitude(longitude)
                 .name(name)
-                .type(type)
+                .type(Type.BUS_STOP.getValue())
                 .build();
         final var busStop = busStopHelper.createBusStop(member);
         assertThat(busStop.getId()).isEqualTo(atcoCode);
