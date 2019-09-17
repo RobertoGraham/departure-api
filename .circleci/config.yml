@@ -1,0 +1,20 @@
+version: 2.1
+jobs:
+  test:
+    branches:
+      only:
+        - master
+    docker:
+      - image: maven:3.6.1-jdk-11-slim
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "pom.xml" }}
+            - v1-dependencies-
+      - run: mvn dependency:go-offline
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: v1-dependencies-{{ checksum "pom.xml" }}
+      - run: mvn -e -B test
