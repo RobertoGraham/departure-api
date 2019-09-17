@@ -2,22 +2,52 @@ package io.github.robertograham.busapi.util;
 
 import io.github.robertograham.busapi.client.dto.PlacesResponse;
 import io.github.robertograham.busapi.client.dto.Type;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
-class BusStopHelperTests {
+@SpringBootTest
+final class BusStopHelperTests {
 
+    @Autowired
     private BusStopHelper busStopHelper;
 
-    @BeforeEach
-    void setUp() {
-        busStopHelper = new BusStopHelper();
+    @Test
+    @DisplayName("createBusStopList filters out member objects that don't have the bus stop type")
+    void createBusStopList() {
+        final var members = Arrays.stream(Type.values())
+                .map(Type::getValue)
+                .map((final var typeValueString) -> PlacesResponse.Member.newBuilder()
+                        .type(typeValueString)
+                        .name("")
+                        .latitude(BigDecimal.ZERO)
+                        .longitude(BigDecimal.ZERO)
+                        .accuracy(0)
+                        .atcoCode(typeValueString)
+                        .build())
+                .collect(Collectors.toList());
+
+        final var busStops = busStopHelper.createBusStopList(PlacesResponse.newBuilder()
+                .requestTime(ZonedDateTime.now())
+                .source("")
+                .acknowledgements("")
+                .members(members)
+                .build());
+
+        assertThat(busStops).hasSize(1);
+        assertThat(busStops.get(0).getId()).isEqualTo(Type.BUS_STOP.getValue());
     }
 
     @Test
@@ -40,7 +70,9 @@ class BusStopHelperTests {
                 .name(name)
                 .type(Type.BUS_STOP.getValue())
                 .build();
+
         final var busStop = busStopHelper.createBusStop(member);
+
         assertThat(busStop.getId()).isEqualTo(atcoCode);
         assertThat(busStop.getLatitude()).isEqualTo(latitude);
         assertThat(busStop.getLocality()).isEqualTo(description);
@@ -57,8 +89,8 @@ class BusStopHelperTests {
     @TestFactory
     Stream<DynamicTest> createBusStopThrowsIllegalArgumentException() {
         return Arrays.stream(Type.values())
-                .filter(type -> Type.BUS_STOP != type)
-                .map(type -> dynamicTest(String.format("an illegal argument exception is thrown when createBusStop is passed a value with \"%s\" set for its type field", type.getValue()),
+                .filter((final var type) -> Type.BUS_STOP != type)
+                .map((final var type) -> dynamicTest(String.format("an illegal argument exception is thrown when createBusStop is passed a value with \"%s\" set for its type field", type.getValue()),
                         () -> assertThatIllegalArgumentException().isThrownBy(() ->
                                 busStopHelper.createBusStop(PlacesResponse.Member.newBuilder()
                                         .accuracy(0)

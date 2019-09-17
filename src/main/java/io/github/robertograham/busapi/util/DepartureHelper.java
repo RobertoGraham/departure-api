@@ -28,18 +28,33 @@ public final class DepartureHelper {
     }
 
     private Departure createDeparture(final BusStopDeparturesResponse.Departure departure) {
-        final var localDate = Optional.ofNullable(departure.getExpectedDepartureDate())
-                .or(() -> Optional.ofNullable(departure.getDate()))
-                .orElseGet(() -> LocalDate.now(ZONE_ID));
-        final var localTime = departure.getBestDepartureEstimate();
         return Departure.newBuilder()
-                .epochSecond(localDate.toEpochSecond(localTime, ZONE_ID.getRules().getOffset(localDate.atTime(localTime))))
+                .epochSecond(resolveDepartureTimeEpochSecond(departure))
                 .direction(departure.getDir())
                 .destination(departure.getDirection())
                 .line(departure.getLine())
-                .lineName(Optional.ofNullable(departure.getLineName()).orElseGet(departure::getLine))
+                .lineName(resolveDepartureLineName(departure))
                 .operator(departure.getOperator())
-                .operatorName(Optional.ofNullable(departure.getOperatorName()).orElseGet(departure::getOperator))
+                .operatorName(resolveDepartureOperatorName(departure))
                 .build();
+    }
+
+    private long resolveDepartureTimeEpochSecond(final BusStopDeparturesResponse.Departure departure) {
+        final var departureLocalDate = Optional.ofNullable(departure.getExpectedDepartureDate())
+                .or(() -> Optional.ofNullable(departure.getDate()))
+                .orElseGet(() -> LocalDate.now(ZONE_ID));
+        return departureLocalDate.atTime(departure.getBestDepartureEstimate())
+                .atZone(ZONE_ID)
+                .toEpochSecond();
+    }
+
+    private String resolveDepartureLineName(final BusStopDeparturesResponse.Departure departure) {
+        return Optional.ofNullable(departure.getLineName())
+                .orElseGet(departure::getLine);
+    }
+
+    private String resolveDepartureOperatorName(BusStopDeparturesResponse.Departure departure) {
+        return Optional.ofNullable(departure.getOperatorName())
+                .orElseGet(departure::getOperator);
     }
 }
