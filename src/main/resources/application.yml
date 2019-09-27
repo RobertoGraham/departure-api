@@ -13,7 +13,7 @@ feign:
 
 logging:
   level:
-    io.github.robertograham.busapi.client.TransportApiClient: DEBUG
+    io.github.robertograham.departureapi.client.TransportApiClient: DEBUG
 
 spring:
   jackson:
