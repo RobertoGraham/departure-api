@@ -2,7 +2,6 @@ package io.github.robertograham.departureapi.util;
 
 import io.github.robertograham.departureapi.client.dto.BusStopDeparturesResponse;
 import io.github.robertograham.departureapi.dto.Departure;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -11,23 +10,25 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Component
 public final class DepartureHelper {
 
     private static final ZoneId ZONE_ID = ZoneId.of("Europe/London");
 
-    public List<Departure> createDepartureList(final BusStopDeparturesResponse busStopDeparturesResponse) {
+    private DepartureHelper() {
+    }
+
+    public static List<Departure> createDepartureList(final BusStopDeparturesResponse busStopDeparturesResponse) {
         return createDepartureList(busStopDeparturesResponse.getDepartures());
     }
 
-    private List<Departure> createDepartureList(final Map<String, List<BusStopDeparturesResponse.Departure>> lineToDepartureListMap) {
+    private static List<Departure> createDepartureList(final Map<String, List<BusStopDeparturesResponse.Departure>> lineToDepartureListMap) {
         return lineToDepartureListMap.values().stream()
             .flatMap(List::stream)
-            .map(this::createDeparture)
+            .map(DepartureHelper::createDeparture)
             .collect(Collectors.toList());
     }
 
-    private Departure createDeparture(final BusStopDeparturesResponse.Departure departure) {
+    private static Departure createDeparture(final BusStopDeparturesResponse.Departure departure) {
         return Departure.newBuilder()
             .epochSecond(resolveDepartureTimeEpochSecond(departure))
             .direction(departure.getDir())
@@ -39,7 +40,7 @@ public final class DepartureHelper {
             .build();
     }
 
-    private long resolveDepartureTimeEpochSecond(final BusStopDeparturesResponse.Departure departure) {
+    private static long resolveDepartureTimeEpochSecond(final BusStopDeparturesResponse.Departure departure) {
         final var departureLocalDate = Optional.ofNullable(departure.getExpectedDepartureDate())
             .or(() -> Optional.ofNullable(departure.getDate()))
             .orElseGet(() -> LocalDate.now(ZONE_ID));
@@ -48,12 +49,12 @@ public final class DepartureHelper {
             .toEpochSecond();
     }
 
-    private String resolveDepartureLineName(final BusStopDeparturesResponse.Departure departure) {
+    private static String resolveDepartureLineName(final BusStopDeparturesResponse.Departure departure) {
         return Optional.ofNullable(departure.getLineName())
             .orElseGet(departure::getLine);
     }
 
-    private String resolveDepartureOperatorName(BusStopDeparturesResponse.Departure departure) {
+    private static String resolveDepartureOperatorName(BusStopDeparturesResponse.Departure departure) {
         return Optional.ofNullable(departure.getOperatorName())
             .orElseGet(departure::getOperator);
     }

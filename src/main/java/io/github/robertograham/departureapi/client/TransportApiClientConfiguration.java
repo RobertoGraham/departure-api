@@ -14,6 +14,9 @@ import java.util.stream.Collectors;
 
 final class TransportApiClientConfiguration {
 
+    private static final DateTimeFormatter LOCAL_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter LOCAL_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+
     @Bean
     private RequestInterceptor requestInterceptor(@Value("${transportApiClient.applicationId}") final String applicationId,
                                                   @Value("${transportApiClient.applicationKey}") final String applicationKey) {
@@ -33,8 +36,8 @@ final class TransportApiClientConfiguration {
                 .filter(Objects::nonNull)
                 .map(Type::getValue)
                 .collect(Collectors.joining(",")));
-            formatterRegistry.addConverter(LocalDate.class, String.class, DateTimeFormatter.ofPattern("yyyy-MM-dd")::format);
-            formatterRegistry.addConverter(LocalTime.class, String.class, DateTimeFormatter.ofPattern("HH:mm")::format);
+            formatterRegistry.addConverter(LocalDate.class, String.class, LOCAL_DATE_FORMATTER::format);
+            formatterRegistry.addConverter(LocalTime.class, String.class, LOCAL_TIME_FORMATTER::format);
         };
     }
 }
