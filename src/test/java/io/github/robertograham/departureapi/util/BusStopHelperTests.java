@@ -10,6 +10,7 @@ import org.junit.jupiter.api.TestFactory;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,14 +23,13 @@ final class BusStopHelperTests {
     @DisplayName("createBusStopList filters out member objects that don't have the bus stop type")
     void createBusStopList() {
         final var members = Arrays.stream(Type.values())
-            .map(Type::getValue)
-            .map((final var typeValueString) -> PlacesResponse.Member.newBuilder()
-                .type(typeValueString)
+            .map((final var type) -> PlacesResponse.Member.newBuilder()
+                .type(type)
                 .name("")
                 .latitude(BigDecimal.ZERO)
                 .longitude(BigDecimal.ZERO)
                 .accuracy(0)
-                .atcoCode(typeValueString)
+                .atcoCode(type.name())
                 .build())
             .collect(Collectors.toList());
 
@@ -41,7 +41,7 @@ final class BusStopHelperTests {
             .build());
 
         assertThat(busStops).hasSize(1);
-        assertThat(busStops.get(0).getId()).isEqualTo(Type.BUS_STOP.getValue());
+        assertThat(busStops.get(0).getId()).isEqualTo(Type.BUS_STOP.name());
     }
 
     @Test
@@ -62,7 +62,7 @@ final class BusStopHelperTests {
             .latitude(latitude)
             .longitude(longitude)
             .name(name)
-            .type(Type.BUS_STOP.getValue())
+            .type(Type.BUS_STOP)
             .build();
 
         final var busStop = BusStopHelper.createBusStop(member);
@@ -82,8 +82,7 @@ final class BusStopHelperTests {
 
     @TestFactory
     Stream<DynamicTest> createBusStopThrowsIllegalArgumentException() {
-        return Arrays.stream(Type.values())
-            .filter((final var type) -> Type.BUS_STOP != type)
+        return EnumSet.complementOf(EnumSet.of(Type.BUS_STOP)).stream()
             .map((final var type) -> dynamicTest(String.format("an illegal argument exception is thrown when createBusStop is passed a value with \"%s\" set for its type field", type.getValue()),
                 () -> assertThatIllegalArgumentException().isThrownBy(() ->
                     BusStopHelper.createBusStop(PlacesResponse.Member.newBuilder()
@@ -91,7 +90,7 @@ final class BusStopHelperTests {
                         .latitude(BigDecimal.ZERO)
                         .longitude(BigDecimal.ZERO)
                         .name("")
-                        .type(type.getValue())
+                        .type(type)
                         .build()))));
     }
 }

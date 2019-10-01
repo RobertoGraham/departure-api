@@ -41,7 +41,7 @@ public class PlacesResponse {
 
         @JsonProperty("type")
         @NonNull
-        String type;
+        Type type;
 
         @JsonProperty("name")
         @NonNull

@@ -38,7 +38,7 @@ final class BusStopServiceImpl implements BusStopService {
             .type(Type.BUS_STOP)
             .build());
         return placesResponse.getMembers().stream()
-            .filter((final var member) -> Type.BUS_STOP.getValue().equals(member.getType()))
+            .filter((final var member) -> Type.BUS_STOP == member.getType())
             .filter((final var member) -> busStopId.equals(member.getAtcoCode()))
             .findFirst()
             .map(BusStopHelper::createBusStop);

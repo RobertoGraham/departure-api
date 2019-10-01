@@ -19,15 +19,15 @@ public final class BusStopHelper {
 
     private static List<BusStop> createBusStopList(final List<PlacesResponse.Member> members) {
         return members.stream()
-            .filter((final var member) -> Type.BUS_STOP.getValue().equals(member.getType()))
+            .filter((final var member) -> Type.BUS_STOP == member.getType())
             .map(BusStopHelper::createBusStop)
             .collect(Collectors.toList());
     }
 
     public static BusStop createBusStop(final PlacesResponse.Member member) {
         Objects.requireNonNull(member, "member cannot be null");
-        if (!Type.BUS_STOP.getValue().equals(member.getType()))
-            throw new IllegalArgumentException(String.format("Expected member with type \"%s\" got \"%s\" instead", Type.BUS_STOP.getValue(), member.getType()));
+        if (Type.BUS_STOP != member.getType())
+            throw new IllegalArgumentException(String.format("Expected member with type \"%s\" got \"%s\" instead", Type.BUS_STOP.name(), member.getType()));
         return BusStop.newBuilder()
             .id(member.getAtcoCode())
             .name(member.getName())
