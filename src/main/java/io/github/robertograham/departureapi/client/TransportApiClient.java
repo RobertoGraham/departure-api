@@ -1,6 +1,7 @@
 package io.github.robertograham.departureapi.client;
 
 import io.github.robertograham.departureapi.client.dto.*;
+import io.github.robertograham.departureapi.client.dto.PlacesResponse.Member;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +11,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static io.github.robertograham.departureapi.client.dto.Type.BUS_STOP;
 
 @FeignClient(
     name = "transportApiClient",
@@ -54,4 +61,25 @@ public interface TransportApiClient {
                           @RequestParam(value = "min_lon", required = false) BigDecimal minLongitude,
                           @RequestParam(required = false) String query,
                           @RequestParam(value = "type", required = false) TypeSet typeSet);
+
+    default List<Member> nearbyBusStopPlacesMembers(final BigDecimal latitude, final BigDecimal longitude) {
+        return places(latitude, longitude, null, null, null, null, null, TypeSet.newBuilder()
+            .type(BUS_STOP)
+            .build())
+            .getMembers().stream()
+            .filter(Objects::nonNull)
+            .filter((final var member) -> BUS_STOP == member.getType())
+            .collect(Collectors.toList());
+    }
+
+    default Optional<Member> busStopPlacesMemberById(final String busStopId) {
+        return places(null, null, null, null, null, null, busStopId, TypeSet.newBuilder()
+            .type(BUS_STOP)
+            .build())
+            .getMembers().stream()
+            .filter(Objects::nonNull)
+            .filter((final var member) -> BUS_STOP == member.getType())
+            .filter((final var member) -> busStopId.equals(member.getAtcoCode()))
+            .findFirst();
+    }
 }

@@ -3,8 +3,6 @@ package io.github.robertograham.departureapi.service;
 import io.github.robertograham.departureapi.client.TransportApiClient;
 import io.github.robertograham.departureapi.client.dto.Group;
 import io.github.robertograham.departureapi.client.dto.NextBuses;
-import io.github.robertograham.departureapi.client.dto.Type;
-import io.github.robertograham.departureapi.client.dto.TypeSet;
 import io.github.robertograham.departureapi.dto.BusStop;
 import io.github.robertograham.departureapi.dto.Departure;
 import io.github.robertograham.departureapi.util.BusStopHelper;
@@ -26,21 +24,12 @@ final class BusStopServiceImpl implements BusStopService {
 
     @Override
     public List<BusStop> getNearbyBusStops(final BigDecimal longitude, final BigDecimal latitude) {
-        final var placesResponse = transportApiClient.places(latitude, longitude, null, null, null, null, null, TypeSet.newBuilder()
-            .type(Type.BUS_STOP)
-            .build());
-        return BusStopHelper.createBusStopList(placesResponse);
+        return BusStopHelper.createBusStopList(transportApiClient.nearbyBusStopPlacesMembers(latitude, longitude));
     }
 
     @Override
     public Optional<BusStop> getBusStop(final String busStopId) {
-        final var placesResponse = transportApiClient.places(null, null, null, null, null, null, busStopId, TypeSet.newBuilder()
-            .type(Type.BUS_STOP)
-            .build());
-        return placesResponse.getMembers().stream()
-            .filter((final var member) -> Type.BUS_STOP == member.getType())
-            .filter((final var member) -> busStopId.equals(member.getAtcoCode()))
-            .findFirst()
+        return transportApiClient.busStopPlacesMemberById(busStopId)
             .map(BusStopHelper::createBusStop);
     }
 

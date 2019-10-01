@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,7 +22,7 @@ final class BusStopHelperTests {
     @Test
     @DisplayName("createBusStopList filters out member objects that don't have the bus stop type")
     void createBusStopList() {
-        final var members = Arrays.stream(Type.values())
+        final var members = Stream.of(Type.BUS_STOP)
             .map((final var type) -> PlacesResponse.Member.newBuilder()
                 .type(type)
                 .name("")
@@ -33,12 +33,7 @@ final class BusStopHelperTests {
                 .build())
             .collect(Collectors.toList());
 
-        final var busStops = BusStopHelper.createBusStopList(PlacesResponse.newBuilder()
-            .requestTime(ZonedDateTime.now())
-            .source("")
-            .acknowledgements("")
-            .members(members)
-            .build());
+        final var busStops = BusStopHelper.createBusStopList(members);
 
         assertThat(busStops).hasSize(1);
         assertThat(busStops.get(0).getId()).isEqualTo(Type.BUS_STOP.name());
@@ -47,31 +42,24 @@ final class BusStopHelperTests {
     @Test
     @DisplayName("createBusStop builds a bus stop with the correct values set for its fields")
     void createBusStop() {
-        final var accuracy = 0;
-        final var atcoCode = "atcoCode";
-        final var description = "description";
-        final var distance = 1;
-        final var latitude = BigDecimal.ZERO;
-        final var longitude = BigDecimal.ONE;
-        final var name = "name";
         final var member = PlacesResponse.Member.newBuilder()
-            .accuracy(accuracy)
-            .atcoCode(atcoCode)
-            .description(description)
-            .distance(distance)
-            .latitude(latitude)
-            .longitude(longitude)
-            .name(name)
+            .accuracy(0)
+            .atcoCode("atcoCode")
+            .description("description")
+            .distance(1)
+            .latitude(BigDecimal.ZERO)
+            .longitude(BigDecimal.ONE)
+            .name("name")
             .type(Type.BUS_STOP)
             .build();
 
         final var busStop = BusStopHelper.createBusStop(member);
 
-        assertThat(busStop.getId()).isEqualTo(atcoCode);
-        assertThat(busStop.getLatitude()).isEqualTo(latitude);
-        assertThat(busStop.getLocality()).isEqualTo(description);
-        assertThat(busStop.getLongitude()).isEqualTo(longitude);
-        assertThat(busStop.getName()).isEqualTo(name);
+        assertThat(busStop.getId()).isEqualTo(member.getAtcoCode());
+        assertThat(busStop.getLatitude()).isEqualTo(member.getLatitude());
+        assertThat(busStop.getLocality()).isEqualTo(member.getDescription());
+        assertThat(busStop.getLongitude()).isEqualTo(member.getLongitude());
+        assertThat(busStop.getName()).isEqualTo(member.getName());
     }
 
     @Test
@@ -83,7 +71,7 @@ final class BusStopHelperTests {
     @TestFactory
     Stream<DynamicTest> createBusStopThrowsIllegalArgumentException() {
         return EnumSet.complementOf(EnumSet.of(Type.BUS_STOP)).stream()
-            .map((final var type) -> dynamicTest(String.format("an illegal argument exception is thrown when createBusStop is passed a value with \"%s\" set for its type field", type.getValue()),
+            .map((final var type) -> dynamicTest(String.format("an illegal argument exception is thrown when createBusStop is passed a value with %s set for its type field", type.name()),
                 () -> assertThatIllegalArgumentException().isThrownBy(() ->
                     BusStopHelper.createBusStop(PlacesResponse.Member.newBuilder()
                         .accuracy(0)
@@ -92,5 +80,35 @@ final class BusStopHelperTests {
                         .name("")
                         .type(type)
                         .build()))));
+    }
+
+    @TestFactory
+    Stream<DynamicTest> createBusStopListThrowsIllegalArgumentExceptionWhenTypeIsNotBusStop() {
+        return EnumSet.complementOf(EnumSet.of(Type.BUS_STOP)).stream()
+            .map((final var type) -> dynamicTest(String.format("an illegal argument exception is thrown when createBusStopList is passed a list containing a value with %s set for its type field", type.name()),
+                () -> assertThatIllegalArgumentException().isThrownBy(() ->
+                    BusStopHelper.createBusStopList(List.of(PlacesResponse.Member.newBuilder()
+                        .accuracy(0)
+                        .latitude(BigDecimal.ZERO)
+                        .longitude(BigDecimal.ZERO)
+                        .name("")
+                        .type(type)
+                        .build())))));
+    }
+
+    @Test
+    @DisplayName("an illegal argument exception is thrown when createBusStopList is passed a list containing a null element")
+    void createBusStopListThrowsIllegalArgumentExceptionWhenAnElementIsNull() {
+        final var memberList = new ArrayList<PlacesResponse.Member>();
+        memberList.add(null);
+        assertThatIllegalArgumentException().isThrownBy(() ->
+            BusStopHelper.createBusStopList(memberList));
+    }
+
+    @Test
+    @DisplayName("a null pointer exception is thrown when createBusStopList is passed a null value")
+    void createBusStopListThrowsNullPointerException() {
+        assertThatNullPointerException().isThrownBy(() ->
+            BusStopHelper.createBusStopList(null));
     }
 }
