@@ -93,7 +93,7 @@ public class BusRouteResponse {
 
         @JsonProperty("bearing")
         @NonNull
-        String bearing;
+        Bearing bearing;
 
         @JsonProperty("indicator")
         @NonNull

@@ -16,6 +16,8 @@ public enum Type {
 
     TRAIN_STATION("train_station"),
 
+    TUBE_STATION("tube_station"),
+
     BUS_STOP("bus_stop"),
 
     SETTLEMENT("settlement"),
