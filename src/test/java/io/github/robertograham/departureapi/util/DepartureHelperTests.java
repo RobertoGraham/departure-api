@@ -1,5 +1,6 @@
 package io.github.robertograham.departureapi.util;
 
+import io.github.robertograham.departureapi.client.dto.Bearing;
 import io.github.robertograham.departureapi.client.dto.BusStopDeparturesResponse;
 import org.junit.jupiter.api.Test;
 
@@ -37,7 +38,7 @@ final class DepartureHelperTests {
             .requestTime(ZonedDateTime.now())
             .name("")
             .stopName("")
-            .bearing("")
+            .bearing(Bearing.NORTH)
             .indicator("")
             .locality("")
             .departures(Map.of("", List.of(busStopDeparturesResponseDeparture)))

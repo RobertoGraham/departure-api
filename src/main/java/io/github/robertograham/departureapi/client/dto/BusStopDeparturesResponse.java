@@ -43,7 +43,7 @@ public class BusStopDeparturesResponse {
 
     @JsonProperty("bearing")
     @NonNull
-    String bearing;
+    Bearing bearing;
 
     @JsonProperty("indicator")
     @NonNull

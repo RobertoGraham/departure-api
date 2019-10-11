@@ -12,31 +12,33 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-public enum Type {
+public enum Bearing {
 
-    TRAIN_STATION("train_station"),
+    NORTH("N"),
 
-    BUS_STOP("bus_stop"),
+    NORTH_EAST("NE"),
 
-    SETTLEMENT("settlement"),
+    EAST("E"),
 
-    REGION("region"),
+    SOUTH_EAST("SE"),
 
-    STREET("street"),
+    SOUTH("S"),
 
-    POINT_OF_INTEREST("poi"),
+    SOUTH_WEST("SW"),
 
-    POSTCODE("postcode");
+    WEST("W"),
 
-    private static final Map<String, Type> VALUE_LOOKUP = Arrays.stream(Type.values())
-        .collect(Collectors.toMap(Type::getValue, Function.identity()));
+    NORTH_WEST("NW");
+
+    private static final Map<String, Bearing> VALUE_LOOKUP = Arrays.stream(Bearing.values())
+        .collect(Collectors.toMap(Bearing::getValue, Function.identity()));
 
     @Getter
     @NonNull
     private final String value;
 
     @JsonCreator
-    public static Type fromValue(final String value) {
+    public static Bearing fromValue(final String value) {
         return Optional.ofNullable(VALUE_LOOKUP.get(value))
             .orElseThrow(() -> new IllegalArgumentException(String.format("No mapping for value, \"%s\"", value)));
     }

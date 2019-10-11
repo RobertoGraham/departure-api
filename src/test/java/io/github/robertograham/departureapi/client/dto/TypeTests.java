@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 final class TypeTests {
@@ -21,9 +22,9 @@ final class TypeTests {
     }
 
     @Test
-    @DisplayName("fromValue returns UNKNOWN when value has no mapping")
+    @DisplayName("fromValue throws IllegalArgumentException when value has no mapping")
     void fromValueUnmappedValue() {
-        assertThat(Type.fromValue(null)).isEqualTo(Type.UNKNOWN);
-        assertThat(Type.fromValue("unmappedValue")).isEqualTo(Type.UNKNOWN);
+        assertThatIllegalArgumentException().isThrownBy(() -> Type.fromValue(null));
+        assertThatIllegalArgumentException().isThrownBy(() -> Type.fromValue("unmappedValue"));
     }
 }
