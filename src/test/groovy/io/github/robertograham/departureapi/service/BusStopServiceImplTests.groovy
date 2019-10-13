@@ -1,10 +1,14 @@
 package io.github.robertograham.departureapi.service
 
 import io.github.robertograham.departureapi.client.TransportApiClient
-import io.github.robertograham.departureapi.client.dto.PlacesResponse
-import io.github.robertograham.departureapi.client.dto.Type
+import io.github.robertograham.departureapi.client.dto.*
+import io.github.robertograham.departureapi.dto.BusStop
+import io.github.robertograham.departureapi.dto.Departure
 import spock.lang.Specification
 
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneId
 import java.time.ZonedDateTime
 
 final class BusStopServiceImplTests extends Specification {
@@ -24,14 +28,11 @@ final class BusStopServiceImplTests extends Specification {
                 name: "name",
                 type: Type.BUS_STOP)
                 .build()
-        def placesResponse = new PlacesResponse.Builder(members: [placesResponseMember],
-                requestTime: ZonedDateTime.now(),
-                source: "source",
-                acknowledgements: "acknowledgements")
-                .build()
+
         when:
         def busStop = busStopService.getBusStop(busStopId)
                 .orElseThrow()
+
         then:
         1 * transportApiClient.places(null,
                 null,
@@ -40,19 +41,38 @@ final class BusStopServiceImplTests extends Specification {
                 null,
                 null,
                 busStopId,
-                { it.types == [Type.BUS_STOP] as Set }) >> placesResponse
-        busStop.id == busStopId
-        busStop.latitude == placesResponseMember.latitude
-        busStop.longitude == placesResponseMember.longitude
-        busStop.locality == placesResponseMember.description
-        busStop.name == placesResponseMember.name
+                { it.types == [Type.BUS_STOP] as Set }) >> new PlacesResponse.Builder(members: [placesResponseMember],
+                requestTime: ZonedDateTime.now(),
+                source: "source",
+                acknowledgements: "acknowledgements")
+                .build()
+        busStop == new BusStop.Builder(id: busStopId,
+                latitude: placesResponseMember.latitude,
+                longitude: placesResponseMember.longitude,
+                locality: placesResponseMember.description,
+                name: placesResponseMember.name)
+                .build()
     }
 
     def "get nearby bus stops"() {
         given:
         def longitude = BigDecimal.ZERO
         def latitude = BigDecimal.ONE
-        def placesResponse = new PlacesResponse.Builder(acknowledgements: "acknowledgments",
+
+        when:
+        def busStops = busStopService.getNearbyBusStops(longitude, latitude)
+
+        then:
+        1 * transportApiClient.places(latitude,
+                longitude,
+                null,
+                null,
+                null,
+                null,
+                null,
+                {
+                    it.types == [Type.BUS_STOP] as Set
+                }) >> new PlacesResponse.Builder(acknowledgements: "acknowledgments",
                 requestTime: ZonedDateTime.now(),
                 source: "source",
                 members: [*Type.values()
@@ -69,17 +89,54 @@ final class BusStopServiceImplTests extends Specification {
                         },
                           null])
                 .build()
-        when:
-        def busStops = busStopService.getNearbyBusStops(longitude, latitude)
-        then:
-        1 * transportApiClient.places(latitude,
-                longitude,
-                null,
-                null,
-                null,
-                null,
-                null,
-                { it.types == [Type.BUS_STOP] as Set }) >> placesResponse
         busStops.collect { it.id } == [Type.BUS_STOP.value]
+    }
+
+    def "get bus stop departures"() {
+        given:
+        def busStopId = "busStopId"
+        def busStopDeparturesResponseDeparture = new BusStopDeparturesResponse.Departure.Builder(mode: "mode",
+                line: "line",
+                lineName: "lineName",
+                direction: "direction",
+                operator: "operator",
+                date: LocalDate.MIN,
+                expectedDepartureDate: LocalDate.EPOCH,
+                aimedDepartureTime: LocalTime.MAX,
+                expectedDepartureTime: LocalTime.MAX,
+                bestDepartureEstimate: LocalTime.MIN,
+                source: "source",
+                dir: "dir",
+                operatorName: "operatorName")
+                .build()
+
+        when:
+        def departures = busStopService.getDepartures(busStopId)
+
+        then:
+        1 * transportApiClient.busStopDepartures(busStopId, Group.NO, 300, NextBuses.NO) >> new BusStopDeparturesResponse.Builder(atcoCode: "",
+                smsCode: "",
+                requestTime: ZonedDateTime.now(),
+                name: "",
+                stopName: "",
+                bearing: Bearing.NORTH,
+                indicator: "",
+                locality: "",
+                departures: ["": [busStopDeparturesResponseDeparture]],
+                location: new BusStopDeparturesResponse.Location.Builder(type: "",
+                        coordinates: [])
+                        .build())
+                .build()
+        departures == [new Departure.Builder(direction: busStopDeparturesResponseDeparture.dir,
+                destination: busStopDeparturesResponseDeparture.direction,
+                line: busStopDeparturesResponseDeparture.line,
+                lineName: busStopDeparturesResponseDeparture.lineName,
+                operator: busStopDeparturesResponseDeparture.operator,
+                operatorName: busStopDeparturesResponseDeparture.operatorName,
+                epochSecond: busStopDeparturesResponseDeparture.getExpectedDepartureDate()
+                        .atTime(busStopDeparturesResponseDeparture.bestDepartureEstimate)
+                        .atZone(ZoneId.of("Europe/London"))
+                        .toEpochSecond())
+                               .build()]
     }
 }
