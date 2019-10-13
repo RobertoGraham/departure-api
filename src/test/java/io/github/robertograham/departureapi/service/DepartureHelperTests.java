@@ -1,4 +1,4 @@
-package io.github.robertograham.departureapi.util;
+package io.github.robertograham.departureapi.service;
 
 import io.github.robertograham.departureapi.client.dto.Bearing;
 import io.github.robertograham.departureapi.client.dto.BusStopDeparturesResponse;

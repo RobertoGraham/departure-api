@@ -1,4 +1,4 @@
-package io.github.robertograham.departureapi.util;
+package io.github.robertograham.departureapi.service;
 
 import io.github.robertograham.departureapi.client.dto.PlacesResponse;
 import io.github.robertograham.departureapi.client.dto.Type;
@@ -8,12 +8,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public final class BusStopHelper {
+final class BusStopHelper {
 
     private BusStopHelper() {
     }
 
-    public static List<BusStop> createBusStopList(final List<PlacesResponse.Member> members) {
+    static List<BusStop> createBusStopList(final List<PlacesResponse.Member> members) {
         Objects.requireNonNull(members, "members cannot be null");
         if (members.stream()
             .anyMatch((final var member) -> member == null || Type.BUS_STOP != member.getType()))
@@ -23,7 +23,7 @@ public final class BusStopHelper {
             .collect(Collectors.toList());
     }
 
-    public static BusStop createBusStop(final PlacesResponse.Member member) {
+    static BusStop createBusStop(final PlacesResponse.Member member) {
         Objects.requireNonNull(member, "member cannot be null");
         if (Type.BUS_STOP != member.getType())
             throw new IllegalArgumentException(String.format("member must have a type of %s", Type.BUS_STOP.name()));

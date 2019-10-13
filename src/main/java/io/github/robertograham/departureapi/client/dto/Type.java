@@ -5,11 +5,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Arrays;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public enum Type {
@@ -30,8 +26,7 @@ public enum Type {
 
     POSTCODE("postcode");
 
-    private static final Map<String, Type> VALUE_LOOKUP = Arrays.stream(Type.values())
-        .collect(Collectors.toMap(Type::getValue, Function.identity()));
+    private static final Map<String, Type> VALUE_LOOKUP = EnumValueLookupHelper.createValueEnumLookup(Type.class, Type::getValue);
 
     @Getter
     @NonNull
@@ -39,7 +34,6 @@ public enum Type {
 
     @JsonCreator
     public static Type fromValue(final String value) {
-        return Optional.ofNullable(VALUE_LOOKUP.get(value))
-            .orElseThrow(() -> new IllegalArgumentException(String.format("No mapping for value, \"%s\"", value)));
+        return EnumValueLookupHelper.fromValue(value, VALUE_LOOKUP);
     }
 }

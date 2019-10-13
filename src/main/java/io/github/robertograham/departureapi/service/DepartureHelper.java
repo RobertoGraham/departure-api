@@ -1,4 +1,4 @@
-package io.github.robertograham.departureapi.util;
+package io.github.robertograham.departureapi.service;
 
 import io.github.robertograham.departureapi.client.dto.BusStopDeparturesResponse;
 import io.github.robertograham.departureapi.dto.Departure;
@@ -10,14 +10,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public final class DepartureHelper {
+final class DepartureHelper {
 
     private static final ZoneId ZONE_ID = ZoneId.of("Europe/London");
 
     private DepartureHelper() {
     }
 
-    public static List<Departure> createDepartureList(final BusStopDeparturesResponse busStopDeparturesResponse) {
+    static List<Departure> createDepartureList(final BusStopDeparturesResponse busStopDeparturesResponse) {
         return createDepartureList(busStopDeparturesResponse.getDepartures());
     }
 

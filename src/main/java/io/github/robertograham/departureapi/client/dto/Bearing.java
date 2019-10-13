@@ -5,11 +5,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Arrays;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public enum Bearing {
@@ -30,8 +26,7 @@ public enum Bearing {
 
     NORTH_WEST("NW");
 
-    private static final Map<String, Bearing> VALUE_LOOKUP = Arrays.stream(Bearing.values())
-        .collect(Collectors.toMap(Bearing::getValue, Function.identity()));
+    private static final Map<String, Bearing> VALUE_LOOKUP = EnumValueLookupHelper.createValueEnumLookup(Bearing.class, Bearing::getValue);
 
     @Getter
     @NonNull
@@ -39,7 +34,6 @@ public enum Bearing {
 
     @JsonCreator
     public static Bearing fromValue(final String value) {
-        return Optional.ofNullable(VALUE_LOOKUP.get(value))
-            .orElseThrow(() -> new IllegalArgumentException(String.format("No mapping for value, \"%s\"", value)));
+        return EnumValueLookupHelper.fromValue(value, VALUE_LOOKUP);
     }
 }

@@ -6,8 +6,6 @@ import io.github.robertograham.departureapi.client.dto.NextBuses;
 import io.github.robertograham.departureapi.client.dto.TypeSet;
 import io.github.robertograham.departureapi.dto.BusStop;
 import io.github.robertograham.departureapi.dto.Departure;
-import io.github.robertograham.departureapi.util.BusStopHelper;
-import io.github.robertograham.departureapi.util.DepartureHelper;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
