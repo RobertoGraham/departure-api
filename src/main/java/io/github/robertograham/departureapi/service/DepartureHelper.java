@@ -2,6 +2,8 @@ package io.github.robertograham.departureapi.service;
 
 import io.github.robertograham.departureapi.client.dto.BusStopDeparturesResponse;
 import io.github.robertograham.departureapi.dto.Departure;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -10,12 +12,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class DepartureHelper {
 
     private static final ZoneId ZONE_ID = ZoneId.of("Europe/London");
-
-    private DepartureHelper() {
-    }
 
     static List<Departure> createDepartureList(final BusStopDeparturesResponse busStopDeparturesResponse) {
         return createDepartureList(busStopDeparturesResponse.getDepartures());

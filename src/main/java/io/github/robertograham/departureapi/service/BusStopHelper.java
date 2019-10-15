@@ -3,15 +3,15 @@ package io.github.robertograham.departureapi.service;
 import io.github.robertograham.departureapi.client.dto.PlacesResponse;
 import io.github.robertograham.departureapi.client.dto.Type;
 import io.github.robertograham.departureapi.dto.BusStop;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class BusStopHelper {
-
-    private BusStopHelper() {
-    }
 
     static List<BusStop> createBusStopList(final List<PlacesResponse.Member> members) {
         Objects.requireNonNull(members, "members cannot be null");

@@ -5,12 +5,14 @@ import io.github.robertograham.departureapi.client.dto.*
 import io.github.robertograham.departureapi.dto.BusStop
 import io.github.robertograham.departureapi.dto.Departure
 import spock.lang.Specification
+import spock.lang.Subject
 
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
+@Subject([BusStopServiceImpl, BusStopHelper, DepartureHelper])
 final class BusStopServiceImplTests extends Specification {
 
     private def transportApiClient = Mock(TransportApiClient)
@@ -41,7 +43,9 @@ final class BusStopServiceImplTests extends Specification {
                 null,
                 null,
                 busStopId,
-                { it.types == [Type.BUS_STOP] as Set }) >> new PlacesResponse.Builder(members: [placesResponseMember],
+                {
+                    it.types == [Type.BUS_STOP] as Set
+                }) >> new PlacesResponse.Builder(members: [placesResponseMember],
                 requestTime: ZonedDateTime.now(),
                 source: "source",
                 acknowledgements: "acknowledgements")
@@ -133,8 +137,7 @@ final class BusStopServiceImplTests extends Specification {
                 lineName: busStopDeparturesResponseDeparture.lineName,
                 operator: busStopDeparturesResponseDeparture.operator,
                 operatorName: busStopDeparturesResponseDeparture.operatorName,
-                epochSecond: busStopDeparturesResponseDeparture.getExpectedDepartureDate()
-                        .atTime(busStopDeparturesResponseDeparture.bestDepartureEstimate)
+                epochSecond: busStopDeparturesResponseDeparture.expectedDepartureDate.atTime(busStopDeparturesResponseDeparture.bestDepartureEstimate)
                         .atZone(ZoneId.of("Europe/London"))
                         .toEpochSecond())
                                .build()]
