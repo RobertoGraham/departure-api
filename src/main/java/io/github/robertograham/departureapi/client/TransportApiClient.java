@@ -14,7 +14,8 @@ import java.time.LocalTime;
 @FeignClient(
     name = "transportApiClient",
     url = "${transportApiClient.url}",
-    configuration = TransportApiClientConfiguration.class
+    configuration = TransportApiClientConfiguration.class,
+    primary = false
 )
 public interface TransportApiClient {
 

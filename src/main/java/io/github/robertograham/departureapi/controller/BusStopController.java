@@ -25,21 +25,13 @@ final class BusStopController {
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<BusStop> getNearbyBusStops(@RequestParam final BigDecimal latitude,
                                            @RequestParam final BigDecimal longitude) {
-        try {
-            return busStopService.getNearbyBusStops(longitude, latitude);
-        } catch (final FeignException feignException) {
-            throw createBadGatewayResponseStatusException();
-        }
+        return busStopService.getNearbyBusStops(longitude, latitude);
     }
 
     @GetMapping(value = "/{busStopId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public BusStop getBusStop(@PathVariable final String busStopId) {
-        try {
-            return busStopService.getBusStop(busStopId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("No bus stop found for id: %s", busStopId)));
-        } catch (final FeignException feignException) {
-            throw createBadGatewayResponseStatusException();
-        }
+        return busStopService.getBusStop(busStopId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("No bus stop found for id: %s", busStopId)));
     }
 
     @GetMapping(value = "/{busStopId}/departures", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -49,12 +41,7 @@ final class BusStopController {
         } catch (final FeignException feignException) {
             if (HttpStatus.NOT_FOUND.value() == feignException.status())
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("No bus stop found for id: %s", busStopId), feignException);
-            else
-                throw createBadGatewayResponseStatusException();
+            throw feignException;
         }
-    }
-
-    private ResponseStatusException createBadGatewayResponseStatusException() {
-        return new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Communication error occurred with data provider");
     }
 }
