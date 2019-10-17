@@ -22,19 +22,19 @@ final class BusStopController {
     @NonNull
     private final BusStopService busStopService;
 
-    @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<BusStop> getNearbyBusStops(@RequestParam final BigDecimal latitude,
                                            @RequestParam final BigDecimal longitude) {
         return busStopService.getNearbyBusStops(longitude, latitude);
     }
 
-    @GetMapping(value = "/{busStopId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(value = "/{busStopId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public BusStop getBusStop(@PathVariable final String busStopId) {
         return busStopService.getBusStop(busStopId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("No bus stop found for id: %s", busStopId)));
     }
 
-    @GetMapping(value = "/{busStopId}/departures", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(value = "/{busStopId}/departures", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Departure> getBusStopDepartures(@PathVariable final String busStopId) {
         try {
             return busStopService.getDepartures(busStopId);
