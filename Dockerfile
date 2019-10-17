@@ -1,6 +1,6 @@
 ARG SOURCES_DIR=/src
 
-FROM maven:3.6.2-jdk-12 AS builder
+FROM maven:3.6.2-jdk-13 AS builder
 ARG SOURCES_DIR
 WORKDIR $SOURCES_DIR
 COPY pom.xml .
@@ -8,7 +8,7 @@ RUN mvn -e -B dependency:go-offline
 COPY src ./src
 RUN mvn -e -B package -DskipTests
 
-FROM azul/zulu-openjdk-alpine:12.0.2
+FROM azul/zulu-openjdk-alpine:13
 ARG SOURCES_DIR
 ENV PORT=8080
 WORKDIR /app

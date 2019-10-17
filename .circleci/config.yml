@@ -5,7 +5,7 @@ jobs:
       only:
         - master
     docker:
-      - image: maven:3.6.2-jdk-12
+      - image: maven:3.6.2-jdk-13
     steps:
       - checkout
       - restore_cache:
@@ -27,4 +27,3 @@ jobs:
             -H "Authorization:Bearer $HEROKU_API_KEY" \
             -H "Accept:application/vnd.heroku+json; version=3" \
             https://api.heroku.com/apps/departure-infra-backend/config-vars
-
