@@ -55,7 +55,7 @@ final class BusStopServiceImplTests extends Specification {
                         .build()
 
         and:
-        with(busStop) {
+        verifyAll(busStop) {
             id == busStopId
             latitude == placesResponseMember.latitude
             longitude == placesResponseMember.longitude
@@ -153,7 +153,7 @@ final class BusStopServiceImplTests extends Specification {
         departures.size() == 1
 
         and:
-        with(departures[0]) {
+        verifyAll(departures[0]) {
             direction == busStopDeparturesResponseDeparture.dir
             destination == busStopDeparturesResponseDeparture.direction
             line == busStopDeparturesResponseDeparture.line
