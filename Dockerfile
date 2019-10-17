@@ -1,6 +1,6 @@
 ARG SOURCES_DIR=/src
 
-FROM maven:3.6.2-jdk-13 AS builder
+FROM maven:3.6.2-jdk-14 AS builder
 ARG SOURCES_DIR
 WORKDIR $SOURCES_DIR
 COPY pom.xml .
