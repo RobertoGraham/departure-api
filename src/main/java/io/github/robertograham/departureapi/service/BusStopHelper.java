@@ -26,7 +26,7 @@ final class BusStopHelper {
     }
 
     static BusStop createBusStop(final BusRouteResponse.Stop stop) {
-        Objects.requireNonNull(stop);
+        Objects.requireNonNull(stop, "stop cannot be null");
         return BusStop.newBuilder()
             .id(stop.getAtcoCode())
             .name(stop.getName())

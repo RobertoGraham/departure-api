@@ -8,11 +8,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,9 +24,11 @@ final class BusRouteServiceImpl implements BusRouteService {
 
     @Override
     public Map<Long, List<BusStop>> busRoute(final String operator, final String line, final String busStopId, final String direction, final long epochSecond) {
-        final var instant = Instant.ofEpochSecond(epochSecond);
-        return transportApiClient.busRoute(operator, line, direction, busStopId, LocalDate.ofInstant(instant, ZONE_ID), LocalTime.ofInstant(instant, ZONE_ID), false, Stops.ONWARD)
+        final var zonedDateTime = Instant.ofEpochSecond(epochSecond)
+            .atZone(ZONE_ID);
+        return transportApiClient.busRoute(operator, line, direction, busStopId, zonedDateTime.toLocalDate(), zonedDateTime.toLocalTime(), false, Stops.ONWARD)
             .getStops().stream()
+            .filter(Objects::nonNull)
             .collect(Collectors.groupingBy(this::mapStopToEpochSecond, Collectors.mapping(BusStopHelper::createBusStop, Collectors.toList())));
     }
 
