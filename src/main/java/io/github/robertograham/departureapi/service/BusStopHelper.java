@@ -1,27 +1,16 @@
 package io.github.robertograham.departureapi.service;
 
+import io.github.robertograham.departureapi.client.dto.BusRouteResponse;
 import io.github.robertograham.departureapi.client.dto.PlacesResponse;
 import io.github.robertograham.departureapi.client.dto.Type;
 import io.github.robertograham.departureapi.dto.BusStop;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class BusStopHelper {
-
-    static List<BusStop> createBusStopList(final List<PlacesResponse.Member> members) {
-        Objects.requireNonNull(members, "members cannot be null");
-        if (members.stream()
-            .anyMatch((final var member) -> member == null || Type.BUS_STOP != member.getType()))
-            throw new IllegalArgumentException(String.format("members cannot contain a null value or a Member without a type of %s", Type.BUS_STOP.name()));
-        return members.stream()
-            .map(BusStopHelper::createBusStop)
-            .collect(Collectors.toList());
-    }
 
     static BusStop createBusStop(final PlacesResponse.Member member) {
         Objects.requireNonNull(member, "member cannot be null");
@@ -33,6 +22,17 @@ final class BusStopHelper {
             .locality(member.getDescription())
             .latitude(member.getLatitude())
             .longitude(member.getLongitude())
+            .build();
+    }
+
+    static BusStop createBusStop(final BusRouteResponse.Stop stop) {
+        Objects.requireNonNull(stop);
+        return BusStop.newBuilder()
+            .id(stop.getAtcoCode())
+            .name(stop.getName())
+            .locality(stop.getLocality())
+            .latitude(stop.getLatitude())
+            .longitude(stop.getLongitude())
             .build();
     }
 }

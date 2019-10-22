@@ -26,13 +26,14 @@ final class BusStopServiceImpl implements BusStopService {
 
     @Override
     public List<BusStop> getNearbyBusStops(final BigDecimal longitude, final BigDecimal latitude) {
-        return BusStopHelper.createBusStopList(transportApiClient.places(latitude, longitude, null, null, null, null, null, TypeSet.newBuilder()
+        return transportApiClient.places(latitude, longitude, null, null, null, null, null, TypeSet.newBuilder()
             .type(Type.BUS_STOP)
             .build())
             .getMembers().stream()
             .filter(Objects::nonNull)
             .filter((final var member) -> Type.BUS_STOP == member.getType())
-            .collect(Collectors.toList()));
+            .map(BusStopHelper::createBusStop)
+            .collect(Collectors.toList());
     }
 
     @Override
