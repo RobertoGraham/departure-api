@@ -5,21 +5,17 @@ jobs:
       only:
         - master
     docker:
-      - image: maven:3.6.2-jdk-13
+      - image: docker:18.09.3
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "pom.xml" }}
-            - v1-dependencies-
-      - run: mvn dependency:go-offline
-      - save_cache:
-          paths:
-            - ~/.m2
-          key: v1-dependencies-{{ checksum "pom.xml" }}
+      - setup_remote_docker
+          version: 18.09.3
       - run:
           command: |
-            mvn -e -B test
+            docker login docker.pkg.github.com -u RobertoGraham -p $GITHUB_TOKEN
+            IMAGE_TAG=docker.pkg.github.com/robertograham/departure-api/departure-api:$CIRCLE_SHA1
+            docker build -t $IMAGE_TAG .
+            docker push $IMAGE_TAG
             curl -sSfX PATCH \
             -o /dev/null \
             -d '{"DEPARTURE_API_COMMIT_HASH":"'"$CIRCLE_SHA1"'"}' \

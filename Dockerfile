@@ -6,7 +6,7 @@ WORKDIR $SOURCES_DIR
 COPY pom.xml .
 RUN mvn -e -B dependency:go-offline
 COPY src ./src
-RUN mvn -e -B package -DskipTests
+RUN mvn -e -B package
 
 FROM azul/zulu-openjdk-alpine:13
 ARG SOURCES_DIR
