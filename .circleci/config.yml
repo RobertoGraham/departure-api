@@ -14,7 +14,7 @@ jobs:
           command: |
             docker login docker.pkg.github.com -u RobertoGraham -p $GITHUB_TOKEN
             IMAGE_TAG_COMMIT_HASH=docker.pkg.github.com/robertograham/departure-api/departure-api:$CIRCLE_SHA1
-            IMAGE_TAG_LATEST=docker.pkg.github.com/robertograham/departure-api/departure-api:$CIRCLE_SHA1
+            IMAGE_TAG_LATEST=docker.pkg.github.com/robertograham/departure-api/departure-api:latest
             docker build -t $IMAGE_TAG_COMMIT_HASH .
             docker push $IMAGE_TAG_COMMIT_HASH
             docker tag $IMAGE_TAG_COMMIT_HASH $IMAGE_TAG_LATEST
