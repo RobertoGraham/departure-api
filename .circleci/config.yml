@@ -13,9 +13,12 @@ jobs:
       - run:
           command: |
             docker login docker.pkg.github.com -u RobertoGraham -p $GITHUB_TOKEN
-            IMAGE_TAG=docker.pkg.github.com/robertograham/departure-api/departure-api:$CIRCLE_SHA1
-            docker build -t $IMAGE_TAG .
-            docker push $IMAGE_TAG
+            IMAGE_TAG_COMMIT_HASH=docker.pkg.github.com/robertograham/departure-api/departure-api:$CIRCLE_SHA1
+            IMAGE_TAG_LATEST=docker.pkg.github.com/robertograham/departure-api/departure-api:$CIRCLE_SHA1
+            docker build -t $IMAGE_TAG_COMMIT_HASH .
+            docker push $IMAGE_TAG_COMMIT_HASH
+            docker tag $IMAGE_TAG_COMMIT_HASH $IMAGE_TAG_LATEST
+            docker push $IMAGE_TAG_LATEST
             docker run curlimages/curl:7.66.0 -sSfX PATCH \
             -o /dev/null \
             -d '{"DEPARTURE_API_COMMIT_HASH":"'"$CIRCLE_SHA1"'"}' \
