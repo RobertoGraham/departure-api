@@ -16,7 +16,7 @@ jobs:
             IMAGE_TAG=docker.pkg.github.com/robertograham/departure-api/departure-api:$CIRCLE_SHA1
             docker build -t $IMAGE_TAG .
             docker push $IMAGE_TAG
-            curl -sSfX PATCH \
+            docker run curlimages/curl:7.66.0 -sSfX PATCH \
             -o /dev/null \
             -d '{"DEPARTURE_API_COMMIT_HASH":"'"$CIRCLE_SHA1"'"}' \
             -H "Content-Type:application/json" \
