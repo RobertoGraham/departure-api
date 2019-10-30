@@ -92,7 +92,6 @@ public class BusRouteResponse {
         String locality;
 
         @JsonProperty("bearing")
-        @NonNull
         Bearing bearing;
 
         @JsonProperty("indicator")
