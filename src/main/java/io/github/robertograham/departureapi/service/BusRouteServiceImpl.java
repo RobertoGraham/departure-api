@@ -23,7 +23,7 @@ final class BusRouteServiceImpl implements BusRouteService {
     private final TransportApiClient transportApiClient;
 
     @Override
-    public Map<Long, List<BusStop>> busRoute(final String operator, final String line, final String busStopId, final String direction, final long epochSecond) {
+    public Map<Long, List<BusStop>> getBusRoute(final String operator, final String line, final String busStopId, final String direction, final long epochSecond) {
         final var zonedDateTime = Instant.ofEpochSecond(epochSecond)
             .atZone(ZONE_ID);
         return transportApiClient.busRoute(operator, line, direction, busStopId, zonedDateTime.toLocalDate(), zonedDateTime.toLocalTime(), false, Stops.ONWARD)

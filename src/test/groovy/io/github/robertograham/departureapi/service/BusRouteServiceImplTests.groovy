@@ -17,7 +17,7 @@ final class BusRouteServiceImplTests extends Specification {
     private def busRouteService = new BusRouteServiceImpl(transportApiClient)
     private static final def ZONE_ID = ZoneId.of("Europe/London")
 
-    def ""() {
+    def "a bus route with the correct structure is created and returned"() {
         given: "request parameters"
         def operator = "operator"
         def line = "line"
@@ -56,7 +56,7 @@ final class BusRouteServiceImplTests extends Specification {
                 .build()
 
         when: "a request for the bus route is made"
-        def epochSecondToBusStopListMap = busRouteService.busRoute(operator, line, busStopId, direction, epochSecond)
+        def epochSecondToBusStopListMap = busRouteService.getBusRoute(operator, line, busStopId, direction, epochSecond)
 
         then: "a request to the Transport API is made and a bus route is received"
         1 * transportApiClient.busRoute(operator,

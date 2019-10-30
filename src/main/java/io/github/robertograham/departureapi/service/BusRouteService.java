@@ -7,5 +7,5 @@ import java.util.Map;
 
 public interface BusRouteService {
 
-    Map<Long, List<BusStop>> busRoute(String operator, String line, String busStopId, String direction, long epochSecond);
+    Map<Long, List<BusStop>> getBusRoute(String operator, String line, String busStopId, String direction, long epochSecond);
 }

@@ -17,11 +17,11 @@ final class BusRouteController {
     private final BusRouteService busRouteService;
 
     @GetMapping(value = "/{operator}/{line}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<Long, List<BusStop>> busRouteResponse(@PathVariable final String operator,
-                                                     @PathVariable final String line,
-                                                     @RequestParam final String busStopId,
-                                                     @RequestParam final String direction,
-                                                     @RequestParam final long epochSecond) {
-        return busRouteService.busRoute(operator, line, busStopId, direction, epochSecond);
+    public Map<Long, List<BusStop>> getBusRoute(@PathVariable final String operator,
+                                                @PathVariable final String line,
+                                                @RequestParam final String busStopId,
+                                                @RequestParam final String direction,
+                                                @RequestParam final long epochSecond) {
+        return busRouteService.getBusRoute(operator, line, busStopId, direction, epochSecond);
     }
 }
