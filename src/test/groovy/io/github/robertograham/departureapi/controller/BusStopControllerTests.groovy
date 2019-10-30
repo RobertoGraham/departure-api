@@ -10,16 +10,14 @@ import io.github.robertograham.departureapi.client.dto.PlacesResponse
 import io.github.robertograham.departureapi.client.dto.Type
 import io.github.robertograham.departureapi.client.dto.TypeSet
 import io.github.robertograham.departureapi.dto.BusStop
+import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.context.annotation.Bean
 import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import spock.lang.Specification
-import spock.mock.DetachedMockFactory
 
 import java.time.ZonedDateTime
 
@@ -27,17 +25,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @AutoConfigureMockMvc
-@SpringBootTest(classes = [DepartureApiApplication, MockTransportApiClientConfiguration])
+@SpringBootTest(classes = [DepartureApiApplication])
 final class BusStopControllerTests extends Specification {
 
     @Autowired
     private MockMvc mockMvc
 
     @Autowired
-    private TransportApiClient transportApiClient
-
-    @Autowired
     private ObjectMapper objectMapper
+
+    @SpringBean
+    private TransportApiClient transportApiClient = Mock()
 
     def "get nearby bus stops success"() {
         given: "a latitude and longitude pair"
@@ -163,16 +161,5 @@ final class BusStopControllerTests extends Specification {
         expect:
         mockMvc.perform(MockMvcRequestBuilders.get("/busStops/${busStopId}"))
                 .andExpect(status().isNotFound())
-    }
-
-    @TestConfiguration
-    static class MockTransportApiClientConfiguration {
-
-        private def detachedMockFactory = new DetachedMockFactory()
-
-        @Bean
-        TransportApiClient transportApiClient() {
-            return detachedMockFactory.Mock(TransportApiClient)
-        }
     }
 }
