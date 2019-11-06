@@ -1,9 +1,6 @@
-version: 2.0
+version: 2.1
 jobs:
-  build:
-    branches:
-      only:
-        - master
+  publish-docker-image:
     docker:
       - image: docker:18.09.3-git
     steps:
@@ -13,16 +10,29 @@ jobs:
       - run:
           command: |
             docker login docker.pkg.github.com -u RobertoGraham -p $GITHUB_TOKEN
-            IMAGE_TAG_COMMIT_HASH=docker.pkg.github.com/robertograham/departure-api/departure-api:$CIRCLE_SHA1
-            IMAGE_TAG_LATEST=docker.pkg.github.com/robertograham/departure-api/departure-api:latest
-            docker build -t $IMAGE_TAG_COMMIT_HASH .
-            docker push $IMAGE_TAG_COMMIT_HASH
-            docker tag $IMAGE_TAG_COMMIT_HASH $IMAGE_TAG_LATEST
-            docker push $IMAGE_TAG_LATEST
-            docker run curlimages/curl:7.66.0 -sSfX PATCH \
+            IMAGE_TAG=docker.pkg.github.com/robertograham/departure-local/departure-api:latest
+            docker build -t $IMAGE_TAG .
+            docker push $IMAGE_TAG
+  update-release-tag:
+    docker:
+      - image: curlimages/curl:7.66.0
+    steps:
+      - run:
+          command: |
+            curl -sSfX PATCH \
             -o /dev/null \
             -d '{"DEPARTURE_API_COMMIT_HASH":"'"$CIRCLE_SHA1"'"}' \
             -H "Content-Type:application/json" \
             -H "Authorization:Bearer $HEROKU_API_KEY" \
             -H "Accept:application/vnd.heroku+json; version=3" \
             https://api.heroku.com/apps/departure-infra-backend/config-vars
+workflows:
+  release:
+    jobs:
+      - publish-docker-image:
+          filters:
+            branches:
+              only: master
+      - update-release-tag:
+          requires:
+            - publish-docker-image
