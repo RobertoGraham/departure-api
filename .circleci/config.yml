@@ -10,7 +10,7 @@ jobs:
       - run:
           command: |
             docker login docker.pkg.github.com -u RobertoGraham -p $GITHUB_TOKEN
-            IMAGE_TAG=docker.pkg.github.com/robertograham/departure-local/departure-api:latest
+            IMAGE_TAG=docker.pkg.github.com/robertograham/departure-api/departure-api:latest
             docker build -t $IMAGE_TAG .
             docker push $IMAGE_TAG
   update-release-tag:
