@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 
 final class TransportApiClientConfiguration {
 
-    private static final DateTimeFormatter LOCAL_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
     private final Map<String, Collection<String>> queryMap;
 
     TransportApiClientConfiguration(@Value("${transportApiClient.applicationId}") final String applicationId,
@@ -41,7 +40,8 @@ final class TransportApiClientConfiguration {
                 .map(Type::getValue)
                 .collect(Collectors.joining(",")));
             formatterRegistry.addConverter(LocalDate.class, String.class, LocalDate::toString);
-            formatterRegistry.addConverter(LocalTime.class, String.class, LOCAL_TIME_FORMATTER::format);
+            formatterRegistry.addConverter(LocalTime.class, String.class, localTime -> localTime.truncatedTo(ChronoUnit.MINUTES)
+                .toString());
         };
     }
 }
