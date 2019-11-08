@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 
 final class TransportApiClientConfiguration {
 
-    private static final DateTimeFormatter LOCAL_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter LOCAL_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
     private final Map<String, Collection<String>> queryMap;
 
@@ -41,7 +40,7 @@ final class TransportApiClientConfiguration {
                 .filter(Objects::nonNull)
                 .map(Type::getValue)
                 .collect(Collectors.joining(",")));
-            formatterRegistry.addConverter(LocalDate.class, String.class, LOCAL_DATE_FORMATTER::format);
+            formatterRegistry.addConverter(LocalDate.class, String.class, LocalDate::toString);
             formatterRegistry.addConverter(LocalTime.class, String.class, LOCAL_TIME_FORMATTER::format);
         };
     }

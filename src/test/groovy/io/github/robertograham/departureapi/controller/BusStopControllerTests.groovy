@@ -35,7 +35,7 @@ final class BusStopControllerTests extends Specification {
     private ObjectMapper objectMapper
 
     @SpringBean
-    private TransportApiClient transportApiClient = Mock()
+    private TransportApiClient transportApiClient = Stub()
 
     def "get nearby bus stops success"() {
         given: "a latitude and longitude pair"

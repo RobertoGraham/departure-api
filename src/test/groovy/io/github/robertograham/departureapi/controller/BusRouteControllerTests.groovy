@@ -31,7 +31,7 @@ final class BusRouteControllerTests extends Specification {
     private ObjectMapper objectMapper
 
     @SpringBean
-    private TransportApiClient transportApiClient = Mock()
+    private TransportApiClient transportApiClient = Stub()
 
     private static final def ZONE_ID = ZoneId.of("Europe/London")
 
