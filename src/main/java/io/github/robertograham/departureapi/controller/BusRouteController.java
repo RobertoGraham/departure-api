@@ -1,6 +1,6 @@
 package io.github.robertograham.departureapi.controller;
 
-import io.github.robertograham.departureapi.dto.BusStop;
+import io.github.robertograham.departureapi.response.BusStop;
 import io.github.robertograham.departureapi.service.BusRouteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;

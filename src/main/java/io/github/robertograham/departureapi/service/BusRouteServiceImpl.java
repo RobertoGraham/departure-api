@@ -3,7 +3,7 @@ package io.github.robertograham.departureapi.service;
 import io.github.robertograham.departureapi.client.TransportApiClient;
 import io.github.robertograham.departureapi.client.dto.BusRouteResponse;
 import io.github.robertograham.departureapi.client.dto.Stops;
-import io.github.robertograham.departureapi.dto.BusStop;
+import io.github.robertograham.departureapi.response.BusStop;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

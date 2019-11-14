@@ -1,6 +1,6 @@
 package io.github.robertograham.departureapi.service;
 
-import io.github.robertograham.departureapi.dto.BusStop;
+import io.github.robertograham.departureapi.response.BusStop;
 
 import java.util.List;
 import java.util.Map;

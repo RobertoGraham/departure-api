@@ -3,7 +3,7 @@ package io.github.robertograham.departureapi.service;
 import io.github.robertograham.departureapi.client.dto.BusRouteResponse;
 import io.github.robertograham.departureapi.client.dto.PlacesResponse;
 import io.github.robertograham.departureapi.client.dto.Type;
-import io.github.robertograham.departureapi.dto.BusStop;
+import io.github.robertograham.departureapi.response.BusStop;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

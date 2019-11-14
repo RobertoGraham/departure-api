@@ -1,4 +1,4 @@
-package io.github.robertograham.departureapi.dto;
+package io.github.robertograham.departureapi.response;
 
 import lombok.Builder;
 import lombok.NonNull;

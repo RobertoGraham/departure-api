@@ -1,7 +1,7 @@
 package io.github.robertograham.departureapi.service;
 
 import io.github.robertograham.departureapi.client.dto.BusStopDeparturesResponse;
-import io.github.robertograham.departureapi.dto.Departure;
+import io.github.robertograham.departureapi.response.Departure;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
