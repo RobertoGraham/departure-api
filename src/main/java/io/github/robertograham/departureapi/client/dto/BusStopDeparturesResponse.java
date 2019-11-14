@@ -14,6 +14,7 @@ import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Builder(builderMethodName = "newBuilder", builderClassName = "Builder")
 @Value
@@ -42,7 +43,6 @@ public class BusStopDeparturesResponse {
     String stopName;
 
     @JsonProperty("bearing")
-    @NonNull
     Bearing bearing;
 
     @JsonProperty("indicator")
@@ -114,6 +114,22 @@ public class BusStopDeparturesResponse {
 
         @JsonProperty("operator_name")
         String operatorName;
+
+        public Optional<LocalDate> getDate() {
+            return Optional.ofNullable(date);
+        }
+
+        public Optional<LocalDate> getExpectedDepartureDate() {
+            return Optional.ofNullable(expectedDepartureDate);
+        }
+
+        public Optional<String> getLineName() {
+            return Optional.ofNullable(lineName);
+        }
+
+        public Optional<String> getOperatorName() {
+            return Optional.ofNullable(operatorName);
+        }
     }
 
     @lombok.Builder(builderMethodName = "newBuilder", builderClassName = "Builder")

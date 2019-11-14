@@ -51,7 +51,13 @@ final class BusStopServiceImpl implements BusStopService {
 
     @Override
     public List<Departure> getDepartures(final String busStopId) {
-        final var busStopDeparturesResponse = transportApiClient.busStopDepartures(busStopId, Group.NO, 300, NextBuses.NO);
-        return DepartureHelper.createDepartureList(busStopDeparturesResponse);
+        return transportApiClient.busStopDepartures(busStopId, Group.NO, 300, NextBuses.NO)
+            .getDepartures()
+            .values().stream()
+            .filter(Objects::nonNull)
+            .flatMap(List::stream)
+            .filter(Objects::nonNull)
+            .map(DepartureHelper::createDeparture)
+            .collect(Collectors.toList());
     }
 }

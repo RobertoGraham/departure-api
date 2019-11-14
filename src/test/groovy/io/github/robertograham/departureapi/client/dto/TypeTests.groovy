@@ -17,12 +17,9 @@ final class TypeTests extends Specification {
     }
 
     @Unroll
-    def "fromValue throws IllegalArgumentException when value has no mapping"() {
-        when:
-        Type.fromValue(value)
-
-        then:
-        thrown(IllegalArgumentException)
+    def "fromValue returns null when value has no mapping"() {
+        expect:
+        Type.fromValue(value) == null
 
         where:
         value << ["unmappedValue", null]

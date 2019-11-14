@@ -157,13 +157,16 @@ final class BusStopServiceImplTests extends Specification {
             direction == busStopDeparturesResponseDeparture.dir
             destination == busStopDeparturesResponseDeparture.direction
             line == busStopDeparturesResponseDeparture.line
-            lineName == busStopDeparturesResponseDeparture.lineName
+            lineName == busStopDeparturesResponseDeparture.lineName.orElse(null)
             operator == busStopDeparturesResponseDeparture.operator
-            operatorName == busStopDeparturesResponseDeparture.operatorName
+            operatorName == busStopDeparturesResponseDeparture.operatorName.orElse(null)
             epochSecond == busStopDeparturesResponseDeparture.expectedDepartureDate
-                    .atTime(busStopDeparturesResponseDeparture.bestDepartureEstimate)
-                    .atZone(ZoneId.of("Europe/London"))
-                    .toEpochSecond()
+                    .map {
+                        it.atTime(busStopDeparturesResponseDeparture.bestDepartureEstimate)
+                                .atZone(ZoneId.of("Europe/London"))
+                                .toEpochSecond()
+                    }
+                    .orElse(null)
         }
     }
 }
