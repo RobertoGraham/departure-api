@@ -6,7 +6,7 @@ import io.github.robertograham.departureapi.client.TransportApiClient
 import io.github.robertograham.departureapi.client.dto.Bearing
 import io.github.robertograham.departureapi.client.dto.BusRouteResponse
 import io.github.robertograham.departureapi.client.dto.Stops
-import io.github.robertograham.departureapi.dto.BusStop
+import io.github.robertograham.departureapi.response.BusStop
 import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
