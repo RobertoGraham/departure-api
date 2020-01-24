@@ -4,13 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import feign.FeignException
 import feign.Request
 import feign.Response
-import io.github.robertograham.departureapi.DepartureApiApplication
 import io.github.robertograham.departureapi.client.TransportApiClient
 import io.github.robertograham.departureapi.client.dto.PlacesResponse
 import io.github.robertograham.departureapi.client.dto.Type
 import io.github.robertograham.departureapi.client.dto.TypeSet
 import io.github.robertograham.departureapi.response.BusStop
-import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -24,8 +22,8 @@ import java.time.ZonedDateTime
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
+@SpringBootTest(classes = TransportApiClientStubConfiguration)
 @AutoConfigureMockMvc
-@SpringBootTest(classes = [DepartureApiApplication])
 final class BusStopControllerTests extends Specification {
 
     @Autowired
@@ -34,8 +32,8 @@ final class BusStopControllerTests extends Specification {
     @Autowired
     private ObjectMapper objectMapper
 
-    @SpringBean
-    private TransportApiClient transportApiClient = Stub()
+    @Autowired
+    private TransportApiClient transportApiClient
 
     def "get nearby bus stops success"() {
         given: "a latitude and longitude pair"
@@ -132,7 +130,7 @@ final class BusStopControllerTests extends Specification {
                         .build()
 
         expect:
-        mockMvc.perform(MockMvcRequestBuilders.get("/busStops/${busStopId}"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/busStops/$busStopId"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(BusStop.newBuilder()
                         .id(placesResponseMember.atcoCode)
@@ -159,7 +157,7 @@ final class BusStopControllerTests extends Specification {
                         .build()
 
         expect:
-        mockMvc.perform(MockMvcRequestBuilders.get("/busStops/${busStopId}"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/busStops/$busStopId"))
                 .andExpect(status().isNotFound())
     }
 }

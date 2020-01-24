@@ -34,6 +34,6 @@ public enum Bearing {
 
     @JsonCreator
     public static Bearing fromValue(final String value) {
-        return EnumValueLookupHelper.fromValue(value, VALUE_LOOKUP);
+        return VALUE_LOOKUP.getOrDefault(value, null);
     }
 }

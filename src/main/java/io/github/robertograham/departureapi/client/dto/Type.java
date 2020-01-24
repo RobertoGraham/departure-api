@@ -34,6 +34,6 @@ public enum Type {
 
     @JsonCreator
     public static Type fromValue(final String value) {
-        return EnumValueLookupHelper.fromValue(value, VALUE_LOOKUP);
+        return VALUE_LOOKUP.getOrDefault(value, null);
     }
 }

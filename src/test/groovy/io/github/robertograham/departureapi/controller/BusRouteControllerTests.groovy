@@ -1,13 +1,11 @@
 package io.github.robertograham.departureapi.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.github.robertograham.departureapi.DepartureApiApplication
 import io.github.robertograham.departureapi.client.TransportApiClient
 import io.github.robertograham.departureapi.client.dto.Bearing
 import io.github.robertograham.departureapi.client.dto.BusRouteResponse
 import io.github.robertograham.departureapi.client.dto.Stops
 import io.github.robertograham.departureapi.response.BusStop
-import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -20,8 +18,8 @@ import java.time.*
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
+@SpringBootTest(classes = TransportApiClientStubConfiguration)
 @AutoConfigureMockMvc
-@SpringBootTest(classes = [DepartureApiApplication])
 final class BusRouteControllerTests extends Specification {
 
     @Autowired
@@ -30,8 +28,8 @@ final class BusRouteControllerTests extends Specification {
     @Autowired
     private ObjectMapper objectMapper
 
-    @SpringBean
-    private TransportApiClient transportApiClient = Stub()
+    @Autowired
+    private TransportApiClient transportApiClient
 
     private static final def ZONE_ID = ZoneId.of("Europe/London")
 
