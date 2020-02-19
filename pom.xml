@@ -19,7 +19,7 @@
     <properties>
         <java.version>13</java.version>
         <spock-bom.version>1.3-groovy-2.5</spock-bom.version>
-        <spring-cloud-dependencies.version>Hoxton.SR1</spring-cloud-dependencies.version>
+        <spring-cloud-dependencies.version>Hoxton.SR2</spring-cloud-dependencies.version>
         <gmavenplus-plugin.version>1.8.1</gmavenplus-plugin.version>
     </properties>
 
