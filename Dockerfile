@@ -8,7 +8,7 @@ RUN mvn -e -B dependency:go-offline
 COPY src ./src
 RUN mvn -e -B package
 
-FROM azul/zulu-openjdk-alpine:13
+FROM azul/zulu-openjdk-alpine:14
 ARG SOURCES_DIR
 ENV PORT=8080
 WORKDIR /app
