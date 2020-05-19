@@ -1,39 +1,30 @@
 package io.github.robertograham.departureapi.client.dto;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.Map;
-
-@RequiredArgsConstructor
 public enum Type {
 
-    TRAIN_STATION("train_station"),
+    @JsonProperty("train_station")
+    TRAIN_STATION,
 
-    TUBE_STATION("tube_station"),
+    @JsonProperty("tube_station")
+    TUBE_STATION,
 
-    BUS_STOP("bus_stop"),
+    @JsonProperty("bus_stop")
+    BUS_STOP,
 
-    SETTLEMENT("settlement"),
+    @JsonProperty("settlement")
+    SETTLEMENT,
 
-    REGION("region"),
+    @JsonProperty("region")
+    REGION,
 
-    STREET("street"),
+    @JsonProperty("street")
+    STREET,
 
-    POINT_OF_INTEREST("poi"),
+    @JsonProperty("poi")
+    POINT_OF_INTEREST,
 
-    POSTCODE("postcode");
-
-    private static final Map<String, Type> VALUE_LOOKUP = EnumValueLookupHelper.createValueEnumLookup(Type.class, Type::getValue);
-
-    @Getter
-    @NonNull
-    private final String value;
-
-    @JsonCreator
-    public static Type fromValue(final String value) {
-        return VALUE_LOOKUP.getOrDefault(value, null);
-    }
+    @JsonProperty("postcode")
+    POSTCODE
 }

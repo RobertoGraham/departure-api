@@ -7,7 +7,6 @@ import feign.Response
 import io.github.robertograham.departureapi.client.TransportApiClient
 import io.github.robertograham.departureapi.client.dto.PlacesResponse
 import io.github.robertograham.departureapi.client.dto.Type
-import io.github.robertograham.departureapi.client.dto.TypeSet
 import io.github.robertograham.departureapi.response.BusStop
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -54,9 +53,7 @@ final class BusStopControllerTests extends Specification {
                 .build()
 
         and: "a stubbed Transport API client places result"
-        transportApiClient.places(latitude, longitude, null, null, null, null, null, TypeSet.newBuilder()
-                .type(Type.BUS_STOP)
-                .build()) >>
+        transportApiClient.places(latitude, longitude, null, null, null, null, null, Type.BUS_STOP) >>
                 PlacesResponse.newBuilder()
                         .members([placesResponseMember])
                         .requestTime(ZonedDateTime.now())
@@ -86,9 +83,7 @@ final class BusStopControllerTests extends Specification {
         def longitude = BigDecimal.ONE
 
         and: "Transport API client places call throws feign exception"
-        transportApiClient.places(latitude, longitude, null, null, null, null, null, TypeSet.newBuilder()
-                .type(Type.BUS_STOP)
-                .build()) >> {
+        transportApiClient.places(latitude, longitude, null, null, null, null, null, Type.BUS_STOP) >> {
             throw FeignException.errorStatus("", Response.builder()
                     .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                     .request(Request.create(Request.HttpMethod.GET, "", [:], Request.Body.create("", StandardCharsets.UTF_8), null))
@@ -120,9 +115,7 @@ final class BusStopControllerTests extends Specification {
                 .build()
 
         and:
-        transportApiClient.places(null, null, null, null, null, null, busStopId, TypeSet.newBuilder()
-                .type(Type.BUS_STOP)
-                .build()) >>
+        transportApiClient.places(null, null, null, null, null, null, busStopId, Type.BUS_STOP) >>
                 PlacesResponse.newBuilder()
                         .members([placesResponseMember])
                         .requestTime(ZonedDateTime.now())
@@ -147,9 +140,7 @@ final class BusStopControllerTests extends Specification {
         def busStopId = "busStopId"
 
         and:
-        transportApiClient.places(null, null, null, null, null, null, busStopId, TypeSet.newBuilder()
-                .type(Type.BUS_STOP)
-                .build()) >>
+        transportApiClient.places(null, null, null, null, null, null, busStopId, Type.BUS_STOP) >>
                 PlacesResponse.newBuilder()
                         .members([])
                         .requestTime(ZonedDateTime.now())

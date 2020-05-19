@@ -1,39 +1,30 @@
 package io.github.robertograham.departureapi.client.dto;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.Map;
-
-@RequiredArgsConstructor
 public enum Bearing {
 
-    NORTH("N"),
+    @JsonProperty("N")
+    NORTH,
 
-    NORTH_EAST("NE"),
+    @JsonProperty("NE")
+    NORTH_EAST,
 
-    EAST("E"),
+    @JsonProperty("E")
+    EAST,
 
-    SOUTH_EAST("SE"),
+    @JsonProperty("SE")
+    SOUTH_EAST,
 
-    SOUTH("S"),
+    @JsonProperty("S")
+    SOUTH,
 
-    SOUTH_WEST("SW"),
+    @JsonProperty("SW")
+    SOUTH_WEST,
 
-    WEST("W"),
+    @JsonProperty("W")
+    WEST,
 
-    NORTH_WEST("NW");
-
-    private static final Map<String, Bearing> VALUE_LOOKUP = EnumValueLookupHelper.createValueEnumLookup(Bearing.class, Bearing::getValue);
-
-    @Getter
-    @NonNull
-    private final String value;
-
-    @JsonCreator
-    public static Bearing fromValue(final String value) {
-        return VALUE_LOOKUP.getOrDefault(value, null);
-    }
+    @JsonProperty("NW")
+    NORTH_WEST
 }

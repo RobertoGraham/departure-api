@@ -44,9 +44,7 @@ final class BusStopServiceImplTests extends Specification {
                 null,
                 null,
                 busStopId,
-                {
-                    it.types == [Type.BUS_STOP] as Set
-                }) >>
+                { it == [Type.BUS_STOP] }) >>
                 PlacesResponse.newBuilder()
                         .members([placesResponseMember])
                         .requestTime(ZonedDateTime.now())
@@ -80,9 +78,7 @@ final class BusStopServiceImplTests extends Specification {
                 null,
                 null,
                 null,
-                {
-                    it.types == [Type.BUS_STOP] as Set
-                }) >>
+                { it == [Type.BUS_STOP] }) >>
                 PlacesResponse.newBuilder()
                         .acknowledgements("acknowledgments")
                         .requestTime(ZonedDateTime.now())
@@ -91,7 +87,7 @@ final class BusStopServiceImplTests extends Specification {
                                 .collect {
                                     PlacesResponse.Member.newBuilder()
                                             .accuracy(0)
-                                            .atcoCode(it.value)
+                                            .atcoCode(it.name())
                                             .description("description")
                                             .distance(1)
                                             .latitude(BigDecimal.ZERO)
@@ -104,7 +100,7 @@ final class BusStopServiceImplTests extends Specification {
                         .build()
 
         and: "only the place with a Type of BUS_STOP was used to create a DTO"
-        busStops.collect { it.id } == [Type.BUS_STOP.value]
+        busStops.collect { it.id } == [Type.BUS_STOP.name()]
     }
 
     def "get bus stop departures"() {

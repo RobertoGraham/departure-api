@@ -54,5 +54,5 @@ public interface TransportApiClient {
                           @RequestParam(value = "min_lat", required = false) BigDecimal minLatitude,
                           @RequestParam(value = "min_lon", required = false) BigDecimal minLongitude,
                           @RequestParam(required = false) String query,
-                          @RequestParam(value = "type", required = false) TypeSet typeSet);
+                          @RequestParam(value = "type", required = false) Type... types);
 }

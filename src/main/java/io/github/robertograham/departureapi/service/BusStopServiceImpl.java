@@ -4,7 +4,6 @@ import io.github.robertograham.departureapi.client.TransportApiClient;
 import io.github.robertograham.departureapi.client.dto.Group;
 import io.github.robertograham.departureapi.client.dto.NextBuses;
 import io.github.robertograham.departureapi.client.dto.Type;
-import io.github.robertograham.departureapi.client.dto.TypeSet;
 import io.github.robertograham.departureapi.response.BusStop;
 import io.github.robertograham.departureapi.response.Departure;
 import lombok.NonNull;
@@ -26,9 +25,7 @@ final class BusStopServiceImpl implements BusStopService {
 
     @Override
     public List<BusStop> getNearbyBusStops(final BigDecimal longitude, final BigDecimal latitude) {
-        return transportApiClient.places(latitude, longitude, null, null, null, null, null, TypeSet.newBuilder()
-            .type(Type.BUS_STOP)
-            .build())
+        return transportApiClient.places(latitude, longitude, null, null, null, null, null, Type.BUS_STOP)
             .getMembers().stream()
             .filter(Objects::nonNull)
             .filter((final var member) -> Type.BUS_STOP == member.getType())
@@ -38,9 +35,7 @@ final class BusStopServiceImpl implements BusStopService {
 
     @Override
     public Optional<BusStop> getBusStop(final String busStopId) {
-        return transportApiClient.places(null, null, null, null, null, null, busStopId, TypeSet.newBuilder()
-            .type(Type.BUS_STOP)
-            .build())
+        return transportApiClient.places(null, null, null, null, null, null, busStopId, Type.BUS_STOP)
             .getMembers().stream()
             .filter(Objects::nonNull)
             .filter((final var member) -> Type.BUS_STOP == member.getType())
