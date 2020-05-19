@@ -1,6 +1,6 @@
 ARG SOURCES_DIR=/src
 
-FROM maven:3.6.3-adoptopenjdk-14-openj9 AS builder
+FROM maven:3.6.3-openjdk-14-slim AS builder
 ARG SOURCES_DIR
 WORKDIR $SOURCES_DIR
 COPY pom.xml .
