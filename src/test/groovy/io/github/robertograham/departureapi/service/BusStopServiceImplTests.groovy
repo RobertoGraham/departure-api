@@ -13,8 +13,8 @@ import java.time.ZonedDateTime
 @Subject([BusStopServiceImpl, BusStopHelper, DepartureHelper])
 final class BusStopServiceImplTests extends Specification {
 
-    private def transportApiClient = Mock(TransportApiClient)
-    private def busStopService = new BusStopServiceImpl(transportApiClient)
+    private def transportApiClient = Mock TransportApiClient
+    private def subject = new BusStopServiceImpl(transportApiClient)
 
     def "a bus stop DTO with the correct values is created and returned when requesting it by its ID"() {
         given: "a mapped bus stop ID"
@@ -33,7 +33,7 @@ final class BusStopServiceImplTests extends Specification {
                 .build()
 
         when:
-        def busStop = busStopService.getBusStop(busStopId)
+        def busStop = subject.getBusStop(busStopId)
                 .orElseThrow()
 
         then:
@@ -55,7 +55,7 @@ final class BusStopServiceImplTests extends Specification {
                         .build()
 
         and:
-        verifyAll(busStop) {
+        verifyAll busStop, {
             id == busStopId
             latitude == placesResponseMember.latitude
             longitude == placesResponseMember.longitude
@@ -70,7 +70,7 @@ final class BusStopServiceImplTests extends Specification {
         def latitude = BigDecimal.ONE
 
         when: "a request for nearby bus stops is made"
-        def busStops = busStopService.getNearbyBusStops(longitude, latitude)
+        def busStops = subject.getNearbyBusStops(longitude, latitude)
 
         then: "a request to the Transport API is made and places are received"
         1 * transportApiClient.places(latitude,
@@ -129,7 +129,7 @@ final class BusStopServiceImplTests extends Specification {
                 .build()
 
         when:
-        def departures = busStopService.getDepartures(busStopId)
+        def departures = subject.getDepartures(busStopId)
 
         then:
         1 * transportApiClient.busStopDepartures(busStopId, Group.NO, 300, NextBuses.NO) >>
@@ -153,7 +153,7 @@ final class BusStopServiceImplTests extends Specification {
         departures.size() == 1
 
         and:
-        verifyAll(departures[0]) {
+        verifyAll departures.first(), {
             direction == busStopDeparturesResponseDeparture.dir
             destination == busStopDeparturesResponseDeparture.direction
             line == busStopDeparturesResponseDeparture.line

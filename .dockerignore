@@ -1,6 +1,8 @@
 .idea
-/target/
+target
 .dockerignore
 .gitignore
 *.iml
 Dockerfile
+.circleci
+heroku.yml

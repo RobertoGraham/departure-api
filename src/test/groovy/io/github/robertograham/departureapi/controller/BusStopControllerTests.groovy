@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import spock.lang.Specification
 
+import java.nio.charset.StandardCharsets
 import java.time.ZonedDateTime
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
@@ -90,7 +91,7 @@ final class BusStopControllerTests extends Specification {
                 .build()) >> {
             throw FeignException.errorStatus("", Response.builder()
                     .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                    .request(Request.create(Request.HttpMethod.GET, "", [:], null))
+                    .request(Request.create(Request.HttpMethod.GET, "", [:], Request.Body.create("", StandardCharsets.UTF_8), null))
                     .headers([:])
                     .build())
         }

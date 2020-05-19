@@ -3,17 +3,23 @@ transportApiClient:
   applicationId: ${TRANSPORT_API_CLIENT_APPLICATION_ID:defaultApplicationIdValue}
   applicationKey: ${TRANSPORT_API_CLIENT_APPLICATION_KEY:defaultApplicationKeyValue}
 
+transportForTheNorthApiClient:
+  url: ${TRANSPORT_FOR_THE_NORTH_API_CLIENT_URL:https://api.transportforthenorth.com}
+  applicationId: ${TRANSPORT_FOR_THE_NORTH_API_CLIENT_APPLICATION_ID:defaultApplicationIdValue}
+  applicationKey: ${TRANSPORT_FOR_THE_NORTH_API_CLIENT_APPLICATION_KEY:defaultApplicationKeyValue}
+
 feign:
   hystrix:
     enabled: false
   client:
     config:
-      transportApiClient:
-        loggerLevel: basic
+      default:
+        loggerLevel: full
 
 logging:
   level:
     io.github.robertograham.departureapi.client.TransportApiClient: DEBUG
+    io.github.robertograham.departureapi.client.TransportForTheNorthApiClient: DEBUG
 
 spring:
   jackson:
