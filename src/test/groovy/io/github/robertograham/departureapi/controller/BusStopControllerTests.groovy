@@ -4,26 +4,28 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import feign.FeignException
 import feign.Request
 import feign.Response
-import io.github.robertograham.departureapi.client.TransportApiClient
-import io.github.robertograham.departureapi.client.dto.PlacesResponse
-import io.github.robertograham.departureapi.client.dto.Type
 import io.github.robertograham.departureapi.response.BusStop
+import io.github.robertograham.departureapi.service.BusStopService
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.http.HttpStatus
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
+import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import spock.lang.Specification
+import spock.mock.DetachedMockFactory
 
-import java.nio.charset.StandardCharsets
-import java.time.ZonedDateTime
-
+import static feign.Request.HttpMethod.GET
+import static java.math.BigDecimal.ONE
+import static java.math.BigDecimal.ZERO
+import static java.nio.charset.StandardCharsets.UTF_8
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-@SpringBootTest(classes = TransportApiClientStubConfiguration)
-@AutoConfigureMockMvc
+@WebMvcTest(BusStopController)
+@ContextConfiguration(classes = BusStopServiceStubConfiguration)
 final class BusStopControllerTests extends Specification {
 
     @Autowired
@@ -33,123 +35,96 @@ final class BusStopControllerTests extends Specification {
     private ObjectMapper objectMapper
 
     @Autowired
-    private TransportApiClient transportApiClient
+    private BusStopService busStopService
 
     def "get nearby bus stops success"() {
-        given: "a latitude and longitude pair"
-        def latitude = BigDecimal.ZERO
-        def longitude = BigDecimal.ONE
+        given: "coordinates"
+        final def latitude = ZERO
+        final def longitude = ONE
 
-        and: "a stubbed places response member"
-        def placesResponseMember = PlacesResponse.Member.newBuilder()
-                .accuracy(0)
-                .atcoCode("atcoCode")
-                .description("description")
-                .distance(1)
-                .latitude(BigDecimal.ZERO)
-                .longitude(BigDecimal.ONE)
-                .name("name")
-                .type(Type.BUS_STOP)
-                .build()
+        and: "bus stops"
+        final def busStops = [BusStop.newBuilder()
+                                      .id("id")
+                                      .latitude(ZERO)
+                                      .longitude(ONE)
+                                      .locality("locality")
+                                      .name("name")
+                                      .build()]
 
-        and: "a stubbed Transport API client places result"
-        transportApiClient.places(latitude, longitude, null, null, null, null, null, Type.BUS_STOP) >>
-                PlacesResponse.newBuilder()
-                        .members([placesResponseMember])
-                        .requestTime(ZonedDateTime.now())
-                        .source("source")
-                        .acknowledgements("acknowledgements")
-                        .build()
+        and: "a stubbed getNearbyBusStops result"
+        busStopService.getNearbyBusStops(longitude, latitude) >> busStops
 
-        expect:
-        mockMvc.perform(MockMvcRequestBuilders.get("/busStops")
+        expect: "the response to have the correct content"
+        mockMvc.perform(get("/busStops")
                 .param("longitude", longitude as String)
                 .param("latitude", latitude as String))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString([
-                        BusStop.newBuilder()
-                                .id(placesResponseMember.atcoCode)
-                                .latitude(placesResponseMember.latitude)
-                                .longitude(placesResponseMember.longitude)
-                                .locality(placesResponseMember.description)
-                                .name(placesResponseMember.name)
-                                .build()
-                ])))
+                .andExpect(content().json(objectMapper.writeValueAsString(busStops)))
     }
 
     def "get nearby bus stops bad gateway"() {
-        given: "a latitude and longitude pair"
-        def latitude = BigDecimal.ZERO
-        def longitude = BigDecimal.ONE
+        given: "coordinates"
+        final def latitude = ZERO
+        final def longitude = ONE
 
-        and: "Transport API client places call throws feign exception"
-        transportApiClient.places(latitude, longitude, null, null, null, null, null, Type.BUS_STOP) >> {
+        and: "getNearbyBusStops throws a feign exception"
+        busStopService.getNearbyBusStops(longitude, latitude) >> {
             throw FeignException.errorStatus("", Response.builder()
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                    .request(Request.create(Request.HttpMethod.GET, "", [:], Request.Body.create("", StandardCharsets.UTF_8), null))
+                    .status(INTERNAL_SERVER_ERROR.value())
+                    .request(Request.create(GET, "", [:], Request.Body.create("", UTF_8), null))
                     .headers([:])
                     .build())
         }
 
         expect: "a bad gateway response"
-        mockMvc.perform(MockMvcRequestBuilders.get("/busStops")
+        mockMvc.perform(get("/busStops")
                 .param("longitude", longitude as String)
                 .param("latitude", latitude as String))
                 .andExpect(status().isBadGateway())
     }
 
     def "get bus stop by ID success"() {
-        given:
-        def busStopId = "busStopId"
+        given: "a bus stop ID"
+        final def busStopId = "busStopId"
 
-        and:
-        def placesResponseMember = PlacesResponse.Member.newBuilder()
-                .accuracy(0)
-                .atcoCode(busStopId)
-                .description("description")
-                .distance(1)
-                .latitude(BigDecimal.ZERO)
-                .longitude(BigDecimal.ONE)
+        and: "a bus stop"
+        final def busStop = BusStop.newBuilder()
+                .id("id")
+                .latitude(ZERO)
+                .longitude(ONE)
+                .locality("locality")
                 .name("name")
-                .type(Type.BUS_STOP)
                 .build()
 
-        and:
-        transportApiClient.places(null, null, null, null, null, null, busStopId, Type.BUS_STOP) >>
-                PlacesResponse.newBuilder()
-                        .members([placesResponseMember])
-                        .requestTime(ZonedDateTime.now())
-                        .source("source")
-                        .acknowledgements("acknowledgements")
-                        .build()
+        and: "a stubbed getBusStop result"
+        busStopService.getBusStop(busStopId) >> Optional.of(busStop)
 
         expect:
-        mockMvc.perform(MockMvcRequestBuilders.get("/busStops/$busStopId"))
+        mockMvc.perform(get("/busStops/$busStopId"))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(BusStop.newBuilder()
-                        .id(placesResponseMember.atcoCode)
-                        .latitude(placesResponseMember.latitude)
-                        .longitude(placesResponseMember.longitude)
-                        .locality(placesResponseMember.description)
-                        .name(placesResponseMember.name)
-                        .build())))
+                .andExpect(content().json(objectMapper.writeValueAsString(busStop)))
     }
 
     def "get bus stop by ID not found"() {
-        given:
+        given: "a bus stop ID"
         def busStopId = "busStopId"
 
-        and:
-        transportApiClient.places(null, null, null, null, null, null, busStopId, Type.BUS_STOP) >>
-                PlacesResponse.newBuilder()
-                        .members([])
-                        .requestTime(ZonedDateTime.now())
-                        .source("source")
-                        .acknowledgements("acknowledgements")
-                        .build()
+        and: "a stubbed getBusStop result"
+        busStopService.getBusStop(busStopId) >> Optional.empty()
 
-        expect:
-        mockMvc.perform(MockMvcRequestBuilders.get("/busStops/$busStopId"))
+        expect: "a not found response"
+        mockMvc.perform(get("/busStops/$busStopId"))
                 .andExpect(status().isNotFound())
+    }
+
+    @TestConfiguration
+    private static class BusStopServiceStubConfiguration {
+
+        private final def detachedMockFactory = new DetachedMockFactory()
+
+        @Bean
+        BusStopService busStopService() {
+            detachedMockFactory.Stub(BusStopService)
+        }
     }
 }

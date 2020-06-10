@@ -1,25 +1,25 @@
 package io.github.robertograham.departureapi.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.github.robertograham.departureapi.client.TransportApiClient
-import io.github.robertograham.departureapi.client.dto.Bearing
-import io.github.robertograham.departureapi.client.dto.BusRouteResponse
-import io.github.robertograham.departureapi.client.dto.Stops
 import io.github.robertograham.departureapi.response.BusStop
+import io.github.robertograham.departureapi.service.BusRouteService
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
+import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import spock.lang.Specification
+import spock.mock.DetachedMockFactory
 
-import java.time.*
-
+import static java.math.BigDecimal.ONE
+import static java.math.BigDecimal.ZERO
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-@SpringBootTest(classes = TransportApiClientStubConfiguration)
-@AutoConfigureMockMvc
+@WebMvcTest(BusRouteController)
+@ContextConfiguration(classes = BusRouteServiceStubConfiguration)
 final class BusRouteControllerTests extends Specification {
 
     @Autowired
@@ -29,67 +29,45 @@ final class BusRouteControllerTests extends Specification {
     private ObjectMapper objectMapper
 
     @Autowired
-    private TransportApiClient transportApiClient
-
-    private static final def ZONE_ID = ZoneId.of("Europe/London")
+    private BusRouteService busRouteService
 
     def "get bus routes success"() {
-        given:
-        def operator = "operator"
-        def line = "line"
-        def busStopId = "busStopId"
-        def direction = "direction"
-        def epochSecond = 0L
+        given: "request parameters"
+        final def operator = "operator"
+        final def line = "line"
+        final def busStopId = "busStopId"
+        final def direction = "direction"
+        final def epochSecond = 0L
 
-        and:
-        def instant = Instant.ofEpochSecond(0L)
-        def stop = BusRouteResponse.Stop.newBuilder()
-                .time(LocalTime.ofInstant(instant, ZONE_ID))
-                .date(LocalDate.ofInstant(instant, ZONE_ID))
-                .atcoCode("busStopId")
-                .name("name")
-                .stopName("")
-                .smsCode("")
-                .locality("locality")
-                .bearing(Bearing.NORTH)
-                .indicator("")
-                .latitude(BigDecimal.ZERO)
-                .longitude(BigDecimal.ONE)
-                .build()
+        and: "a bus route"
+        final def busRoute = [0L: [BusStop.newBuilder()
+                                           .id("id")
+                                           .name("name")
+                                           .locality("locality")
+                                           .latitude(ZERO)
+                                           .longitude(ONE)
+                                           .build()]]
 
-        and:
-        transportApiClient.busRoute(operator,
-                line,
-                direction,
-                busStopId,
-                LocalDate.ofInstant(Instant.ofEpochSecond(epochSecond), ZONE_ID),
-                LocalTime.ofInstant(Instant.ofEpochSecond(epochSecond), ZONE_ID),
-                false,
-                Stops.ONWARD) >>
-                BusRouteResponse.newBuilder()
-                        .requestTime(ZonedDateTime.now())
-                        .operator("")
-                        .operatorName("")
-                        .line("")
-                        .lineName("")
-                        .originAtcoCode("")
-                        .dir("")
-                        .id("")
-                        .stops([stop])
-                        .build()
+        and: "a stubbed getBusRoute result"
+        busRouteService.getBusRoute(operator, line, busStopId, direction, epochSecond) >> busRoute
 
-        expect:
-        mockMvc.perform(MockMvcRequestBuilders.get("/busRoutes/$operator/$line")
+        expect: "the response to have the correct content"
+        mockMvc.perform(get("/busRoutes/$operator/$line")
                 .param("busStopId", busStopId)
                 .param("direction", direction)
                 .param("epochSecond", epochSecond as String))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString([(instant.epochSecond): [BusStop.newBuilder()
-                                                                                                           .id(stop.atcoCode)
-                                                                                                           .name(stop.name)
-                                                                                                           .locality(stop.locality)
-                                                                                                           .latitude(stop.latitude)
-                                                                                                           .longitude(stop.longitude)
-                                                                                                           .build()]])))
+                .andExpect(content().json(objectMapper.writeValueAsString(busRoute)))
+    }
+
+    @TestConfiguration
+    private static class BusRouteServiceStubConfiguration {
+
+        private final def detachedMockFactory = new DetachedMockFactory()
+
+        @Bean
+        BusRouteService busRouteService() {
+            detachedMockFactory.Stub(BusRouteService)
+        }
     }
 }

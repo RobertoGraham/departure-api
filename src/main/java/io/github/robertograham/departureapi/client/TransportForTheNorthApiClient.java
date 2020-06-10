@@ -8,8 +8,7 @@ import uk.org.siri.siri20.Siri;
 @FeignClient(
     name = "transportForTheNorthApiClient",
     url = "${transportForTheNorthApiClient.url}",
-    configuration = TransportForTheNorthApiClientConfiguration.class,
-    primary = false
+    configuration = TransportForTheNorthApiClientConfiguration.class
 )
 public interface TransportForTheNorthApiClient {
 
