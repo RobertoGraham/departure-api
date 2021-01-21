@@ -63,22 +63,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.entur</groupId>
-            <artifactId>siri-java-model</artifactId>
-            <version>${siri-java-model.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.github.openfeign</groupId>
-            <artifactId>feign-jaxb</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.glassfish.jaxb</groupId>
-            <artifactId>jaxb-runtime</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
         </dependency>

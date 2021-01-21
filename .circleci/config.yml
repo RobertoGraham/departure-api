@@ -1,34 +1,60 @@
 version: 2.1
-jobs:
-  publish-docker-image:
+commands:
+  setup-remote-docker:
+    steps:
+      - setup_remote_docker:
+          version: 19.03.13
+  docker-build:
+    parameters:
+      image-tag:
+        type: string
+    steps:
+      - run: docker build -t << parameters.image-tag >> .
+
+executors:
+  docker:
     docker:
-      - image: docker:18.09.3-git
+      - image: docker:19.03.13-git
+
+jobs:
+  build-docker-image:
+    executor: docker
     steps:
       - checkout
-      - setup_remote_docker:
-          version: 18.09.3
-      - run:
-          command: |
-            docker login docker.pkg.github.com -u RobertoGraham -p $GITHUB_TOKEN
-            IMAGE_TAG=docker.pkg.github.com/robertograham/departure-api/departure-api:latest
-            docker build -t $IMAGE_TAG .
-            docker push $IMAGE_TAG
+      - setup-remote-docker
+      - docker-build:
+          image-tag: departure-api
+  publish-docker-image:
+    executor: docker
+    environment:
+      IMAGE_TAG: docker.pkg.github.com/robertograham/departure-api/departure-api:latest
+    steps:
+      - checkout
+      - setup-remote-docker
+      - run: docker login docker.pkg.github.com -u RobertoGraham -p $GITHUB_TOKEN
+      - docker-build:
+          image-tag: $IMAGE_TAG
+      - run: docker push $IMAGE_TAG
   update-release-tag:
     docker:
       - image: curlimages/curl:7.66.0
     steps:
-      - run:
-          command: |
-            curl -sSfX PATCH \
-            -o /dev/null \
-            -d '{"DEPARTURE_API_COMMIT_HASH":"'"$CIRCLE_SHA1"'"}' \
-            -H "Content-Type:application/json" \
-            -H "Authorization:Bearer $HEROKU_API_KEY" \
-            -H "Accept:application/vnd.heroku+json; version=3" \
-            https://api.heroku.com/apps/departure-infra-backend/config-vars
+      - run: |
+          curl -sSfX PATCH \
+          -o /dev/null \
+          -d '{"DEPARTURE_API_COMMIT_HASH":"'"$CIRCLE_SHA1"'"}' \
+          -H "Content-Type:application/json" \
+          -H "Authorization:Bearer $HEROKU_API_KEY" \
+          -H "Accept:application/vnd.heroku+json; version=3" \
+          https://api.heroku.com/apps/departure-infra-backend/config-vars
+
 workflows:
   release:
     jobs:
+      - build-docker-image:
+          filters:
+            branches:
+              ignore: master
       - publish-docker-image:
           filters:
             branches:

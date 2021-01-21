@@ -3,29 +3,12 @@ transportApiClient:
   applicationId: ${TRANSPORT_API_CLIENT_APPLICATION_ID:defaultApplicationIdValue}
   applicationKey: ${TRANSPORT_API_CLIENT_APPLICATION_KEY:defaultApplicationKeyValue}
 
-transportForTheNorthApiClient:
-  url: ${TRANSPORT_FOR_THE_NORTH_API_CLIENT_URL:https://api.transportforthenorth.com}
-  applicationId: ${TRANSPORT_FOR_THE_NORTH_API_CLIENT_APPLICATION_ID:defaultApplicationIdValue}
-  applicationKey: ${TRANSPORT_FOR_THE_NORTH_API_CLIENT_APPLICATION_KEY:defaultApplicationKeyValue}
+feign.client.config.default.loggerLevel: full
 
-feign:
-  hystrix:
-    enabled: false
-  client:
-    config:
-      default:
-        loggerLevel: full
-
-logging:
-  level:
-    io.github.robertograham.departureapi.client.TransportApiClient: DEBUG
-    io.github.robertograham.departureapi.client.TransportForTheNorthApiClient: DEBUG
+logging.level.io.github.robertograham.departureapi.client.TransportApiClient: DEBUG
 
 spring:
-  jackson:
-    default-property-inclusion: NON_NULL
-  main:
-    banner-mode: "off"
+  jackson.default-property-inclusion: NON_NULL
+  main.banner-mode: "off"
 
-server:
-  port: ${PORT:8080}
+server.port: ${PORT:8080}
