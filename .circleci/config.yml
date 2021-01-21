@@ -4,12 +4,6 @@ commands:
     steps:
       - setup_remote_docker:
           version: 19.03.13
-  docker-build:
-    parameters:
-      image-tag:
-        type: string
-    steps:
-      - run: docker build -t << parameters.image-tag >> .
 
 executors:
   docker:
@@ -22,8 +16,14 @@ jobs:
     steps:
       - checkout
       - setup-remote-docker
-      - docker-build:
-          image-tag: departure-api
+      - run: |
+          docker build --target builder -t departure-api-builder .
+          mkdir ~/test-results
+          docker cp $(docker create departure-api-builder:latest):/src/target/surefire-reports ~/test-results/junit
+      - store_test_results:
+          path: ~/test-results
+      - store_artifacts:
+          path: ~/test-results/junit
   publish-docker-image:
     executor: docker
     environment:
@@ -31,10 +31,10 @@ jobs:
     steps:
       - checkout
       - setup-remote-docker
-      - run: docker login docker.pkg.github.com -u RobertoGraham -p $GITHUB_TOKEN
-      - docker-build:
-          image-tag: $IMAGE_TAG
-      - run: docker push $IMAGE_TAG
+      - run: |
+          docker login docker.pkg.github.com -u RobertoGraham -p $GITHUB_TOKEN
+          docker build -t $IMAGE_TAG .
+          docker push $IMAGE_TAG
   update-release-tag:
     docker:
       - image: curlimages/curl:7.66.0
