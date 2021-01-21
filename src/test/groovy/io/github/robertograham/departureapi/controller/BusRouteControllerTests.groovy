@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
-import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
 import spock.mock.DetachedMockFactory
@@ -19,7 +18,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @WebMvcTest(BusRouteController)
-@ContextConfiguration(classes = BusRouteServiceStubConfiguration)
 final class BusRouteControllerTests extends Specification {
 
     @Autowired
@@ -61,7 +59,7 @@ final class BusRouteControllerTests extends Specification {
     }
 
     @TestConfiguration
-    private static class BusRouteServiceStubConfiguration {
+    static class BusRouteServiceStubConfiguration {
 
         private final def detachedMockFactory = new DetachedMockFactory()
 
