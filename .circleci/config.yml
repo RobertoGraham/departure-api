@@ -25,12 +25,12 @@ jobs:
   publish-docker-image:
     executor: docker
     environment:
-      IMAGE_TAG: docker.pkg.github.com/robertograham/departure-api/departure-api:latest
+      IMAGE_TAG: ghcr.io/robertograham/departure-api:$CIRCLE_SHA1
     steps:
       - checkout
       - setup-remote-docker
       - run: |
-          docker login docker.pkg.github.com -u RobertoGraham -p $GITHUB_TOKEN
+          docker login ghcr.io -u RobertoGraham -p $PERSONAL_ACCESS_TOKEN
           docker build -t $IMAGE_TAG .
           docker push $IMAGE_TAG
   update-release-tag:
