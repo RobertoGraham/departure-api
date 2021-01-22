@@ -11,6 +11,7 @@ RUN mvn -e -B package
 FROM azul/zulu-openjdk-alpine:15.0.1
 ARG SOURCES_DIR
 ENV PORT=8080
+LABEL org.opencontainers.image.source=https://github.com/robertograham/departure-api
 WORKDIR /app
 COPY --from=builder $SOURCES_DIR/target/*.jar application.jar
 EXPOSE $PORT
