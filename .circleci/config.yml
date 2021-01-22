@@ -24,13 +24,12 @@ jobs:
           path: ~/test-results
   publish-docker-image:
     executor: docker
-    environment:
-      IMAGE_TAG: ghcr.io/robertograham/departure-api:$CIRCLE_SHA1
     steps:
       - checkout
       - setup-remote-docker
       - run: |
           docker login ghcr.io -u RobertoGraham -p $PERSONAL_ACCESS_TOKEN
+          IMAGE_TAG=ghcr.io/robertograham/departure-api:$CIRCLE_SHA1
           docker build -t $IMAGE_TAG .
           docker push $IMAGE_TAG
   update-release-tag:
