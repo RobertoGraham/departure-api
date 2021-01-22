@@ -22,8 +22,6 @@ jobs:
           docker cp $(docker create departure-api-builder:latest):/src/target/surefire-reports ~/test-results/spock
       - store_test_results:
           path: ~/test-results
-      - store_artifacts:
-          path: ~/test-results/spock
   publish-docker-image:
     executor: docker
     environment:
