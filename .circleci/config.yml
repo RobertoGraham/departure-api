@@ -9,6 +9,9 @@ executors:
   docker:
     docker:
       - image: docker:19.03.13-git
+  curl:
+    docker:
+      - image: curlimages/curl:7.74.0
 
 jobs:
   build-docker-image:
@@ -34,8 +37,7 @@ jobs:
           docker build -t $IMAGE_TAG .
           docker push $IMAGE_TAG
   update-release-tag:
-    docker:
-      - image: curlimages/curl:7.66.0
+    executor: curl
     steps:
       - run: |
           curl -sSfX PATCH \
@@ -45,7 +47,16 @@ jobs:
           -H "Authorization:Bearer $HEROKU_API_KEY" \
           -H "Accept:application/vnd.heroku+json; version=3" \
           https://api.heroku.com/apps/departure-infra-backend/config-vars
-
+  deploy-image:
+    executor: curl
+    steps:
+      - run: |
+          curl -sSfX POST \
+          -o /dev/null \
+          -d '{"branch":"master"}' \
+          -H "Content-Type:application/json" \
+          -H "Circle-Token:$CIRCLE_TOKEN" \
+          https://circleci.com/api/v2/project/gh/RobertoGraham/departure-infra/pipeline
 workflows:
   release:
     jobs:
@@ -60,3 +71,6 @@ workflows:
       - update-release-tag:
           requires:
             - publish-docker-image
+      - deploy-image:
+          requires:
+            - update-release-tag
