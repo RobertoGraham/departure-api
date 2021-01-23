@@ -9,9 +9,6 @@ executors:
   docker:
     docker:
       - image: docker:19.03.13-git
-  curl:
-    docker:
-      - image: curlimages/curl:7.74.0
 
 jobs:
   build-docker-image:
@@ -20,9 +17,9 @@ jobs:
       - checkout
       - setup-remote-docker
       - run: |
-          docker build --target builder -t departure-api-builder .
+          docker build --target builder -t builder .
           mkdir ~/test-results
-          docker cp $(docker create departure-api-builder):/src/target/surefire-reports ~/test-results/spock
+          docker cp $(docker create builder):/src/target/surefire-reports ~/test-results/spock
       - store_test_results:
           path: ~/test-results
   publish-docker-image:
@@ -36,24 +33,14 @@ jobs:
           docker login ghcr.io -u RobertoGraham -p $PERSONAL_ACCESS_TOKEN
           docker build -t $IMAGE_TAG .
           docker push $IMAGE_TAG
-  update-release-tag:
-    executor: curl
-    steps:
-      - run: |
-          curl -sSfX PATCH \
-          -o /dev/null \
-          -d '{"DEPARTURE_API_COMMIT_HASH":"'"$CIRCLE_SHA1"'"}' \
-          -H "Content-Type:application/json" \
-          -H "Authorization:Bearer $HEROKU_API_KEY" \
-          -H "Accept:application/vnd.heroku+json; version=3" \
-          https://api.heroku.com/apps/departure-infra-backend/config-vars
-  deploy-image:
-    executor: curl
+  deploy-docker-image:
+    docker:
+      - image: curlimages/curl:7.74.0
     steps:
       - run: |
           curl -sSfX POST \
           -o /dev/null \
-          -d '{"branch":"master"}' \
+          -d '{"branch":"master","parameters":{"application":"departure-api","commit-hash":"'"$CIRCLE_SHA1"'"}}' \
           -H "Content-Type:application/json" \
           -H "Circle-Token:$CIRCLE_TOKEN" \
           https://circleci.com/api/v2/project/gh/RobertoGraham/departure-infra/pipeline
@@ -68,9 +55,6 @@ workflows:
           filters:
             branches:
               only: master
-      - update-release-tag:
+      - deploy-docker-image:
           requires:
             - publish-docker-image
-      - deploy-image:
-          requires:
-            - update-release-tag
