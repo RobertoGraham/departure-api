@@ -1,21 +1,13 @@
 version: 2.1
-commands:
-  setup-remote-docker:
-    steps:
-      - setup_remote_docker:
-          version: 19.03.13
-
-executors:
-  docker:
-    docker:
-      - image: docker:19.03.13-git
 
 jobs:
   build-docker-image:
-    executor: docker
+    docker:
+      - image: docker:19.03.13-git
     steps:
       - checkout
-      - setup-remote-docker
+      - setup_remote_docker:
+          version: 19.03.13
       - run: |
           docker build --target builder -t builder .
           mkdir ~/test-results
@@ -23,15 +15,16 @@ jobs:
       - store_test_results:
           path: ~/test-results
   publish-docker-image:
-    executor: docker
+    machine:
+      image: ubuntu-2004:202101-01
     environment:
       IMAGE_TAG: ghcr.io/robertograham/departure-api:latest
     steps:
       - checkout
-      - setup-remote-docker
       - run: |
           docker login ghcr.io -u RobertoGraham -p $PERSONAL_ACCESS_TOKEN
           docker build -t $IMAGE_TAG .
+          docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock ghcr.io/robertograham/departure-tests:latest
           docker push $IMAGE_TAG
   deploy-docker-image:
     docker:
