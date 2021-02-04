@@ -8,7 +8,7 @@ RUN mvn -e -B dependency:go-offline
 COPY src ./src
 RUN mvn -e -B package
 
-FROM azul/zulu-openjdk-alpine:15.0.1
+FROM azul/zulu-openjdk-alpine:15.0.2
 ARG SOURCES_DIR
 ENV PORT=8080
 LABEL org.opencontainers.image.source=https://github.com/robertograham/departure-api
