@@ -23,14 +23,12 @@ final class BusStopServiceImpl implements BusStopService {
     @NonNull
     private final TransportApiClient transportApiClient;
 
+    @NonNull
+    private final QuadTreeService quadTreeService;
+
     @Override
     public List<BusStop> getNearbyBusStops(final BigDecimal longitude, final BigDecimal latitude) {
-        return transportApiClient.places(latitude, longitude, null, null, null, null, null, Type.BUS_STOP)
-            .getMembers().stream()
-            .filter(Objects::nonNull)
-            .filter((final var member) -> Type.BUS_STOP == member.getType())
-            .map(BusStopHelper::createBusStop)
-            .collect(Collectors.toList());
+        return quadTreeService.getNearbyBusStops(longitude, latitude);
     }
 
     @Override
