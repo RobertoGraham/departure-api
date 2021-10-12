@@ -1,6 +1,6 @@
 ARG SOURCES_DIR=/src
 
-FROM maven:3.8.1-openjdk-16-slim AS builder
+FROM maven:3.8.3-openjdk-16-slim AS builder
 ARG SOURCES_DIR
 WORKDIR $SOURCES_DIR
 COPY pom.xml .
