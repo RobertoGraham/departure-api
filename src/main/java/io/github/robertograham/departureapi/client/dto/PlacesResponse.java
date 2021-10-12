@@ -1,71 +1,32 @@
 package io.github.robertograham.departureapi.client.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Objects;
 
-@Builder(builderMethodName = "newBuilder", builderClassName = "Builder")
-@Value
-@JsonDeserialize(builder = PlacesResponse.Builder.class)
-@JsonPOJOBuilder(withPrefix = "")
-public class PlacesResponse {
+public record PlacesResponse(@JsonProperty("request_time") ZonedDateTime requestTime, String source,
+                             String acknowledgements, @JsonProperty("member") List<Member> members) {
 
-    @JsonProperty("request_time")
-    @NonNull
-    ZonedDateTime requestTime;
+    public PlacesResponse {
+        Objects.requireNonNull(requestTime, "requestTime cannot be null");
+        Objects.requireNonNull(source, "source cannot be null");
+        Objects.requireNonNull(acknowledgements, "acknowledgements cannot be null");
+        Objects.requireNonNull(members, "members cannot be null");
+    }
 
-    @JsonProperty("source")
-    @NonNull
-    String source;
+    public record Member(Type type, String name, String description, BigDecimal latitude, BigDecimal longitude,
+                         Integer accuracy, @JsonProperty("atcocode") String atcoCode, Integer distance) {
 
-    @JsonProperty("acknowledgements")
-    @NonNull
-    String acknowledgements;
-
-    @JsonProperty("member")
-    @NonNull
-    List<Member> members;
-
-    @lombok.Builder(builderMethodName = "newBuilder", builderClassName = "Builder")
-    @Value
-    @JsonDeserialize(builder = Member.Builder.class)
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class Member {
-
-        @JsonProperty("type")
-        @NonNull
-        Type type;
-
-        @JsonProperty("name")
-        @NonNull
-        String name;
-
-        @JsonProperty("description")
-        String description;
-
-        @JsonProperty("latitude")
-        @NonNull
-        BigDecimal latitude;
-
-        @JsonProperty("longitude")
-        @NonNull
-        BigDecimal longitude;
-
-        @JsonProperty("accuracy")
-        @NonNull
-        Integer accuracy;
-
-        @JsonProperty("atcocode")
-        String atcoCode;
-
-        @JsonProperty("distance")
-        Integer distance;
+        public Member {
+            Objects.requireNonNull(type, "type cannot be null");
+            Objects.requireNonNull(name, "name cannot be null");
+            Objects.requireNonNull(description, "description cannot be null");
+            Objects.requireNonNull(latitude, "latitude cannot be null");
+            Objects.requireNonNull(longitude, "longitude cannot be null");
+            Objects.requireNonNull(accuracy, "accuracy cannot be null");
+        }
     }
 }

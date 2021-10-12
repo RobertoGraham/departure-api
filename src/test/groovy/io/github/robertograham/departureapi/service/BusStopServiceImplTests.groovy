@@ -20,17 +20,8 @@ final class BusStopServiceImplTests extends Specification {
         given: "a mapped bus stop ID"
         def busStopId = "busStopId"
 
-        and: "a"
-        def placesResponseMember = PlacesResponse.Member.newBuilder()
-                .accuracy(0)
-                .atcoCode(busStopId)
-                .description("description")
-                .distance(1)
-                .latitude(BigDecimal.ZERO)
-                .longitude(BigDecimal.ONE)
-                .name("name")
-                .type(Type.BUS_STOP)
-                .build()
+        and:
+        def placesResponseMember = new PlacesResponse.Member(Type.BUS_STOP, 'name', 'description', BigDecimal.ZERO, BigDecimal.ONE, 0, busStopId, 0)
 
         when:
         def busStop = subject.getBusStop(busStopId)
@@ -45,20 +36,15 @@ final class BusStopServiceImplTests extends Specification {
                 null,
                 busStopId,
                 { it == [Type.BUS_STOP] }) >>
-                PlacesResponse.newBuilder()
-                        .members([placesResponseMember])
-                        .requestTime(ZonedDateTime.now())
-                        .source("source")
-                        .acknowledgements("acknowledgements")
-                        .build()
+                new PlacesResponse(ZonedDateTime.now(), 'source', 'acknowledgements', [placesResponseMember])
 
         and:
         verifyAll busStop, {
-            id == busStopId
-            latitude == placesResponseMember.latitude
-            longitude == placesResponseMember.longitude
-            locality == placesResponseMember.description
-            name == placesResponseMember.name
+            id() == busStopId
+            latitude() == placesResponseMember.latitude()
+            longitude() == placesResponseMember.longitude()
+            locality() == placesResponseMember.description()
+            name() == placesResponseMember.name()
         }
     }
 
@@ -79,28 +65,13 @@ final class BusStopServiceImplTests extends Specification {
                 null,
                 null,
                 { it == [Type.BUS_STOP] }) >>
-                PlacesResponse.newBuilder()
-                        .acknowledgements("acknowledgments")
-                        .requestTime(ZonedDateTime.now())
-                        .source("source")
-                        .members([*Type.values()
-                                .collect {
-                                    PlacesResponse.Member.newBuilder()
-                                            .accuracy(0)
-                                            .atcoCode(it.name())
-                                            .description("description")
-                                            .distance(1)
-                                            .latitude(BigDecimal.ZERO)
-                                            .longitude(BigDecimal.ONE)
-                                            .name("name")
-                                            .type(it)
-                                            .build()
-                                },
-                                  null])
-                        .build()
+                new PlacesResponse(ZonedDateTime.now(), 'source', 'acknowledgments', [*Type.values()
+                        .collect {
+                            new PlacesResponse.Member(it, 'name', 'description', BigDecimal.ZERO, BigDecimal.ONE, 0, it.name(), 1)
+                        }, null])
 
         and: "only the place with a Type of BUS_STOP was used to create a DTO"
-        busStops.collect { it.id } == [Type.BUS_STOP.name()]
+        busStops.collect { it.id() } == [Type.BUS_STOP.name()]
     }
 
     def "get bus stop departures"() {
@@ -108,60 +79,30 @@ final class BusStopServiceImplTests extends Specification {
         def busStopId = "busStopId"
 
         and:
-        def busStopDeparturesResponseDeparture = BusStopDeparturesResponse.Departure.newBuilder()
-                .mode("mode")
-                .line("line")
-                .lineName("lineName")
-                .direction("direction")
-                .operator("operator")
-                .date(LocalDate.MIN)
-                .expectedDepartureDate(LocalDate.EPOCH)
-                .aimedDepartureTime(LocalTime.MAX)
-                .expectedDepartureTime(LocalTime.MAX)
-                .bestDepartureEstimate(LocalTime.MIN)
-                .source("source")
-                .dir("dir")
-                .operatorName("operatorName")
-                .build()
+        def busStopDeparturesResponseDeparture = new BusStopDeparturesResponse.Departure('mode', 'line', 'lineName', 'direction', 'operator', LocalDate.MIN, LocalDate.EPOCH, LocalTime.MAX, LocalTime.MAX, LocalTime.MIN, 'source', 'dir', null, 'operatorName')
 
         when:
         def departures = subject.getDepartures(busStopId)
 
         then:
         1 * transportApiClient.busStopDepartures(busStopId, Group.NO, 300, NextBuses.NO) >>
-                BusStopDeparturesResponse.newBuilder()
-                        .atcoCode("")
-                        .smsCode("")
-                        .requestTime(ZonedDateTime.now())
-                        .name("")
-                        .stopName("")
-                        .bearing(Bearing.NORTH)
-                        .indicator("")
-                        .locality("")
-                        .departures(["": [busStopDeparturesResponseDeparture]])
-                        .location(BusStopDeparturesResponse.Location.newBuilder()
-                                .type("")
-                                .coordinates([])
-                                .build())
-                        .build()
+                new BusStopDeparturesResponse('', '', ZonedDateTime.now(), '', '', Bearing.NORTH, '', '', ['': [busStopDeparturesResponseDeparture]], new BusStopDeparturesResponse.Location('', []))
 
         and:
         departures.size() == 1
 
         and:
         verifyAll departures.first(), {
-            direction == busStopDeparturesResponseDeparture.dir
-            destination == busStopDeparturesResponseDeparture.direction
-            line == busStopDeparturesResponseDeparture.line
-            lineName == busStopDeparturesResponseDeparture.lineName.orElse(null)
-            operator == busStopDeparturesResponseDeparture.operator
-            operatorName == busStopDeparturesResponseDeparture.operatorName.orElse(null)
-            epochSecond == busStopDeparturesResponseDeparture.expectedDepartureDate.map {
-                it.atTime(busStopDeparturesResponseDeparture.bestDepartureEstimate)
-                        .atZone(ZoneId.of("Europe/London"))
-                        .toEpochSecond()
-            }
-                    .orElse(null)
+            direction() == busStopDeparturesResponseDeparture.dir()
+            destination() == busStopDeparturesResponseDeparture.direction()
+            line() == busStopDeparturesResponseDeparture.line()
+            lineName() == busStopDeparturesResponseDeparture.lineName()
+            operator() == busStopDeparturesResponseDeparture.operator()
+            operatorName() == busStopDeparturesResponseDeparture.operatorName()
+            epochSecond() == busStopDeparturesResponseDeparture.expectedDepartureDate()
+                    ?.atTime(busStopDeparturesResponseDeparture.bestDepartureEstimate())
+                    ?.atZone(ZoneId.of("Europe/London"))
+                    ?.toEpochSecond()
         }
     }
 }
