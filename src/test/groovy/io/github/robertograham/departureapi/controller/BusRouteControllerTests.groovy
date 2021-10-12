@@ -38,13 +38,7 @@ final class BusRouteControllerTests extends Specification {
         final def epochSecond = 0L
 
         and: "a bus route"
-        final def busRoute = [0L: [BusStop.newBuilder()
-                                           .id("id")
-                                           .name("name")
-                                           .locality("locality")
-                                           .latitude(ZERO)
-                                           .longitude(ONE)
-                                           .build()]]
+        final def busRoute = [0L: [new BusStop('id', 'name', 'locality', ZERO, ONE)]]
 
         and: "a stubbed getBusRoute result"
         busRouteService.getBusRoute(operator, line, busStopId, direction, epochSecond) >> busRoute

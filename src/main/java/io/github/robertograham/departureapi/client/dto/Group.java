@@ -1,17 +1,20 @@
 package io.github.robertograham.departureapi.client.dto;
 
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import java.util.Objects;
 
-@RequiredArgsConstructor
 public enum Group {
 
     ROUTE("route"),
 
     NO("no");
 
-    @Getter
-    @NonNull
     private final String value;
+
+    Group(final String value) {
+        this.value = Objects.requireNonNull(value, "value cannot be null");
+    }
+
+    public String getValue() {
+        return value;
+    }
 }

@@ -1,17 +1,20 @@
 package io.github.robertograham.departureapi.client.dto;
 
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import java.util.Objects;
 
-@RequiredArgsConstructor
 public enum Stops {
 
     ALL("all"),
 
     ONWARD("onward");
 
-    @Getter
-    @NonNull
     private final String value;
+
+    Stops(final String value) {
+        this.value = Objects.requireNonNull(value, "value cannot be null");
+    }
+
+    public String getValue() {
+        return value;
+    }
 }

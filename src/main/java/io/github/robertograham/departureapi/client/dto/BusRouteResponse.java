@@ -2,122 +2,56 @@ package io.github.robertograham.departureapi.client.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Objects;
 
-@Builder(builderMethodName = "newBuilder", builderClassName = "Builder")
-@Value
-@JsonDeserialize(builder = BusRouteResponse.Builder.class)
-@JsonPOJOBuilder(withPrefix = "")
 @JsonIgnoreProperties(value = {"id"}, allowSetters = true)
-public class BusRouteResponse {
+public record BusRouteResponse(@JsonProperty("request_time") ZonedDateTime requestTime, String operator,
+                               @JsonProperty("operator_name") String operatorName, String line,
+                               @JsonProperty("line_name") String lineName,
+                               @JsonProperty("origin_atcocode") String originAtcoCode, String dir, String id,
+                               List<Stop> stops) {
 
-    @JsonProperty("request_time")
-    @NonNull
-    ZonedDateTime requestTime;
+    public BusRouteResponse {
+        Objects.requireNonNull(requestTime, "requestTime cannot be null");
+        Objects.requireNonNull(operator, "operator cannot be null");
+        Objects.requireNonNull(operatorName, "operatorName cannot be null");
+        Objects.requireNonNull(line, "line cannot be null");
+        Objects.requireNonNull(lineName, "lineName cannot be null");
+        Objects.requireNonNull(originAtcoCode, "originAtcoCode cannot be null");
+        Objects.requireNonNull(dir, "dir cannot be null");
+        Objects.requireNonNull(id, "id cannot be null");
+        Objects.requireNonNull(stops, "stops cannot be null");
+    }
 
-    @JsonProperty("operator")
-    @NonNull
-    String operator;
+    public record Stop(LocalTime time, LocalDate date, @JsonProperty("atcocode") String atcoCode, String name,
+                       @JsonProperty("stop_name") String stopName, @JsonProperty("smscode") String smsCode,
+                       String locality, Bearing bearing, String indicator, BigDecimal latitude, BigDecimal longitude,
+                       BusRouteResponse.Stop.Next next) {
 
-    @JsonProperty("operator_name")
-    @NonNull
-    String operatorName;
+        public Stop {
+            Objects.requireNonNull(time, "time cannot be null");
+            Objects.requireNonNull(date, "date cannot be null");
+            Objects.requireNonNull(atcoCode, "atcoCode cannot be null");
+            Objects.requireNonNull(name, "name cannot be null");
+            Objects.requireNonNull(stopName, "stopName cannot be null");
+            Objects.requireNonNull(smsCode, "smsCode cannot be null");
+            Objects.requireNonNull(locality, "locality cannot be null");
+            Objects.requireNonNull(indicator, "indicator cannot be null");
+            Objects.requireNonNull(latitude, "latitude cannot be null");
+            Objects.requireNonNull(longitude, "longitude cannot be null");
+        }
 
-    @JsonProperty("line")
-    @NonNull
-    String line;
+        public record Next(List<List<BigDecimal>> coordinates) {
 
-    @JsonProperty("line_name")
-    @NonNull
-    String lineName;
-
-    @JsonProperty("origin_atcocode")
-    @NonNull
-    String originAtcoCode;
-
-    @JsonProperty("dir")
-    @NonNull
-    String dir;
-
-    @JsonProperty("id")
-    @NonNull
-    String id;
-
-    @JsonProperty("stops")
-    @NonNull
-    List<Stop> stops;
-
-    @lombok.Builder(builderMethodName = "newBuilder", builderClassName = "Builder")
-    @Value
-    @JsonDeserialize(builder = Stop.Builder.class)
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class Stop {
-
-        @JsonProperty("time")
-        @NonNull
-        LocalTime time;
-
-        @JsonProperty("date")
-        @NonNull
-        LocalDate date;
-
-        @JsonProperty("atcocode")
-        @NonNull
-        String atcoCode;
-
-        @JsonProperty("name")
-        @NonNull
-        String name;
-
-        @JsonProperty("stop_name")
-        @NonNull
-        String stopName;
-
-        @JsonProperty("smscode")
-        @NonNull
-        String smsCode;
-
-        @JsonProperty("locality")
-        @NonNull
-        String locality;
-
-        @JsonProperty("bearing")
-        Bearing bearing;
-
-        @JsonProperty("indicator")
-        @NonNull
-        String indicator;
-
-        @JsonProperty("latitude")
-        @NonNull
-        BigDecimal latitude;
-
-        @JsonProperty("longitude")
-        @NonNull
-        BigDecimal longitude;
-
-        @JsonProperty("next")
-        Next next;
-
-        @lombok.Builder(builderMethodName = "newBuilder", builderClassName = "Builder")
-        @Value
-        @JsonDeserialize(builder = Next.Builder.class)
-        @JsonPOJOBuilder(withPrefix = "")
-        public static class Next {
-
-            @JsonProperty("coordinates")
-            @NonNull
-            List<List<BigDecimal>> coordinates;
+            public Next {
+                Objects.requireNonNull(coordinates, "coordinates cannot be null");
+            }
         }
     }
 }

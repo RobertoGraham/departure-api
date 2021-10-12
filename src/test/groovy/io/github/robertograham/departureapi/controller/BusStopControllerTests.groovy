@@ -41,13 +41,7 @@ final class BusStopControllerTests extends Specification {
         final def longitude = ONE
 
         and: "bus stops"
-        final def busStops = [BusStop.newBuilder()
-                                      .id("id")
-                                      .latitude(ZERO)
-                                      .longitude(ONE)
-                                      .locality("locality")
-                                      .name("name")
-                                      .build()]
+        final def busStops = [new BusStop('id', 'name', 'locality', ZERO, ONE)]
 
         and: "a stubbed getNearbyBusStops result"
         busStopService.getNearbyBusStops(longitude, latitude) >> busStops
@@ -86,13 +80,7 @@ final class BusStopControllerTests extends Specification {
         final def busStopId = "busStopId"
 
         and: "a bus stop"
-        final def busStop = BusStop.newBuilder()
-                .id("id")
-                .latitude(ZERO)
-                .longitude(ONE)
-                .locality("locality")
-                .name("name")
-                .build()
+        final def busStop = new BusStop('id', 'name', 'locality', ZERO, ONE)
 
         and: "a stubbed getBusStop result"
         busStopService.getBusStop(busStopId) >> Optional.of(busStop)

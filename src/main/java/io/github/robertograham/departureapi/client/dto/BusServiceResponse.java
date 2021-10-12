@@ -2,107 +2,57 @@ package io.github.robertograham.departureapi.client.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
-@Builder(builderMethodName = "newBuilder", builderClassName = "Builder")
-@Value
-@JsonDeserialize(builder = BusServiceResponse.Builder.class)
-@JsonPOJOBuilder(withPrefix = "")
 @JsonIgnoreProperties(value = {"id"}, allowSetters = true)
-public class BusServiceResponse {
+public record BusServiceResponse(String id,
+                                 io.github.robertograham.departureapi.client.dto.BusServiceResponse.Operator operator,
+                                 String line, @JsonProperty("line_name") String lineName, List<Direction> directions,
+                                 io.github.robertograham.departureapi.client.dto.BusServiceResponse.Centroid centroid,
+                                 String source, String acknowledgements) {
 
-    @JsonProperty("id")
-    @NonNull
-    String id;
-
-    @JsonProperty("operator")
-    @NonNull
-    Operator operator;
-
-    @JsonProperty("line")
-    @NonNull
-    String line;
-
-    @JsonProperty("line_name")
-    @NonNull
-    String lineName;
-
-    @JsonProperty("directions")
-    @NonNull
-    List<Direction> directions;
-
-    @JsonProperty("centroid")
-    @NonNull
-    Centroid centroid;
-
-    @JsonProperty("source")
-    @NonNull
-    String source;
-
-    @JsonProperty("acknowledgements")
-    @NonNull
-    String acknowledgements;
-
-    @lombok.Builder(builderMethodName = "newBuilder", builderClassName = "Builder")
-    @Value
-    @JsonDeserialize(builder = Operator.Builder.class)
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class Operator {
-
-        @JsonProperty("code")
-        @NonNull
-        String code;
-
-        @JsonProperty("name")
-        @NonNull
-        String name;
+    public BusServiceResponse {
+        Objects.requireNonNull(id, "id cannot be null");
+        Objects.requireNonNull(operator, "operator cannot be null");
+        Objects.requireNonNull(line, "line cannot be null");
+        Objects.requireNonNull(lineName, "lineName cannot be null");
+        Objects.requireNonNull(directions, "directions cannot be null");
+        Objects.requireNonNull(centroid, "centroid cannot be null");
+        Objects.requireNonNull(source, "source cannot be null");
+        Objects.requireNonNull(acknowledgements, "acknowledgements cannot be null");
     }
 
-    @lombok.Builder(builderMethodName = "newBuilder", builderClassName = "Builder")
-    @Value
-    @JsonDeserialize(builder = Direction.Builder.class)
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class Direction {
+    public record Operator(String code, String name) {
 
-        @JsonProperty("name")
-        @NonNull
-        String name;
-
-        @JsonProperty("destination")
-        @NonNull
-        Destination destination;
-
-        @lombok.Builder(builderMethodName = "newBuilder", builderClassName = "Builder")
-        @Value
-        @JsonDeserialize(builder = Destination.Builder.class)
-        @JsonPOJOBuilder(withPrefix = "")
-        public static class Destination {
-
-            @JsonProperty("description")
-            @NonNull
-            String description;
+        public Operator {
+            Objects.requireNonNull(code, "code cannot be null");
+            Objects.requireNonNull(name, "name cannot be null");
         }
     }
 
-    @lombok.Builder(builderMethodName = "newBuilder", builderClassName = "Builder")
-    @Value
-    @JsonDeserialize(builder = Centroid.Builder.class)
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class Centroid {
+    public record Direction(String name, BusServiceResponse.Direction.Destination destination) {
 
-        @JsonProperty("type")
-        @NonNull
-        String type;
+        public Direction {
+            Objects.requireNonNull(name, "name cannot be null");
+            Objects.requireNonNull(destination, "destination cannot be null");
+        }
 
-        @JsonProperty("coordinates")
-        @NonNull
-        List<BigDecimal> coordinates;
+        public record Destination(String description) {
+
+            public Destination {
+                Objects.requireNonNull(description, "description cannot be null");
+            }
+        }
+    }
+
+    public record Centroid(String type, List<BigDecimal> coordinates) {
+
+        public Centroid {
+            Objects.requireNonNull(type, "type cannot be null");
+            Objects.requireNonNull(coordinates, "coordinates cannot be null");
+        }
     }
 }

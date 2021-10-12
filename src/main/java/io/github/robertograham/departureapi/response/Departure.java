@@ -1,28 +1,14 @@
 package io.github.robertograham.departureapi.response;
 
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
+import java.util.Objects;
 
-@Builder(builderMethodName = "newBuilder", builderClassName = "Builder")
-@Value
-public class Departure {
+public record Departure(String line, String lineName, String operator, long epochSecond, String operatorName,
+                        String destination, String direction) {
 
-    @NonNull
-    String line;
-
-    @NonNull
-    String lineName;
-
-    @NonNull
-    String operator;
-
-    long epochSecond;
-
-    @NonNull
-    String operatorName;
-
-    String destination;
-
-    String direction;
+    public Departure {
+        Objects.requireNonNull(line, "line cannot be null");
+        Objects.requireNonNull(lineName, "lineName cannot be null");
+        Objects.requireNonNull(operator, "operator cannot be null");
+        Objects.requireNonNull(operatorName, "operatorName cannot be null");
+    }
 }

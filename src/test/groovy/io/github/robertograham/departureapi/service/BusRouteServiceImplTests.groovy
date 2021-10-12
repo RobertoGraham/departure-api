@@ -42,46 +42,20 @@ final class BusRouteServiceImplTests extends Specification {
                 LocalTime.ofInstant(Instant.ofEpochSecond(epochSecond), ZONE_ID),
                 false,
                 Stops.ONWARD) >>
-                BusRouteResponse.newBuilder()
-                        .requestTime(ZonedDateTime.now())
-                        .operator("")
-                        .operatorName("")
-                        .line("")
-                        .lineName("")
-                        .originAtcoCode("")
-                        .dir("")
-                        .id("")
-                        .stops(stops)
-                        .build()
+                new BusRouteResponse(ZonedDateTime.now(), '', '', '', '', '', '', '', stops)
 
         and:
         epochSecondToBusStopListMap == instants.indexed().collectEntries { final index, final instant ->
-            [(instant.epochSecond): [BusStop.newBuilder()
-                                             .id(stops[index].atcoCode)
-                                             .name(stops[index].name)
-                                             .locality(stops[index].locality)
-                                             .latitude(stops[index].latitude)
-                                             .longitude(stops[index].longitude)
-                                             .build()]]
+            [(instant.epochSecond): [stops[index].with {
+                new BusStop(atcoCode(), name(), locality(), latitude(), longitude())
+            }]]
         }
     }
 
     private static List<BusRouteResponse.Stop> createStops(final List<Instant> instants) {
         instants.indexed()
                 .collect { final index, final instant ->
-                    BusRouteResponse.Stop.newBuilder()
-                            .time(LocalTime.ofInstant(instant, ZONE_ID))
-                            .date(LocalDate.ofInstant(instant, ZONE_ID))
-                            .atcoCode("busStopId$index")
-                            .name("name$index")
-                            .stopName("")
-                            .smsCode("")
-                            .locality("locality$index")
-                            .bearing(Bearing.NORTH)
-                            .indicator("")
-                            .latitude(BigDecimal.valueOf(index))
-                            .longitude(BigDecimal.valueOf(index))
-                            .build()
+                    new BusRouteResponse.Stop(LocalTime.ofInstant(instant, ZONE_ID), LocalDate.ofInstant(instant, ZONE_ID), "busStopId$index", "name$index", '', '', "locality$index", Bearing.NORTH, '', BigDecimal.valueOf(index), BigDecimal.valueOf(index), null)
                 }
     }
 }

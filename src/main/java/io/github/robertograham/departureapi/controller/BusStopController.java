@@ -4,8 +4,6 @@ import feign.FeignException;
 import io.github.robertograham.departureapi.response.BusStop;
 import io.github.robertograham.departureapi.response.Departure;
 import io.github.robertograham.departureapi.service.BusStopService;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -13,14 +11,17 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/busStops")
-@RequiredArgsConstructor
 final class BusStopController {
 
-    @NonNull
     private final BusStopService busStopService;
+
+    BusStopController(final BusStopService busStopService) {
+        this.busStopService = Objects.requireNonNull(busStopService, "busStopService cannot be null");
+    }
 
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<BusStop> getNearbyBusStops(@RequestParam final BigDecimal latitude,
