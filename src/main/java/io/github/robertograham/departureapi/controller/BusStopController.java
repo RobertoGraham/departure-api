@@ -1,13 +1,14 @@
 package io.github.robertograham.departureapi.controller;
 
-import feign.FeignException;
 import io.github.robertograham.departureapi.response.BusStop;
 import io.github.robertograham.departureapi.response.Departure;
 import io.github.robertograham.departureapi.service.BusStopService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -31,18 +32,11 @@ final class BusStopController {
 
     @GetMapping(value = "/{busStopId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public BusStop getBusStop(@PathVariable final String busStopId) {
-        return busStopService.getBusStop(busStopId)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("No bus stop found for id: %s", busStopId)));
+        return busStopService.getBusStop(busStopId);
     }
 
     @GetMapping(value = "/{busStopId}/departures", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Departure> getBusStopDepartures(@PathVariable final String busStopId) {
-        try {
-            return busStopService.getDepartures(busStopId);
-        } catch (final FeignException feignException) {
-            if (HttpStatus.NOT_FOUND.value() == feignException.status())
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("No bus stop found for id: %s", busStopId), feignException);
-            throw feignException;
-        }
+        return busStopService.getDepartures(busStopId);
     }
 }
