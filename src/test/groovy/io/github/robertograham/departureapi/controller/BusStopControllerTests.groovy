@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import feign.FeignException
 import feign.Request
 import feign.Response
+import io.github.robertograham.departureapi.exception.BusStopNotFoundException
 import io.github.robertograham.departureapi.response.BusStop
 import io.github.robertograham.departureapi.service.BusStopService
 import org.springframework.beans.factory.annotation.Autowired
@@ -83,7 +84,7 @@ final class BusStopControllerTests extends Specification {
         final def busStop = new BusStop('id', 'name', 'locality', ZERO, ONE)
 
         and: "a stubbed getBusStop result"
-        busStopService.getBusStop(busStopId) >> Optional.of(busStop)
+        busStopService.getBusStop(busStopId) >> busStop
 
         expect:
         mockMvc.perform(get("/busStops/$busStopId"))
@@ -96,7 +97,7 @@ final class BusStopControllerTests extends Specification {
         def busStopId = "busStopId"
 
         and: "a stubbed getBusStop result"
-        busStopService.getBusStop(busStopId) >> Optional.empty()
+        busStopService.getBusStop(busStopId) >> { throw new BusStopNotFoundException(busStopId) }
 
         expect: "a not found response"
         mockMvc.perform(get("/busStops/$busStopId"))

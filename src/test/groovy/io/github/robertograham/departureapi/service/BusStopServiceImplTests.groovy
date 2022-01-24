@@ -1,7 +1,11 @@
 package io.github.robertograham.departureapi.service
 
+import feign.FeignException
+import feign.Request
+import feign.Response
 import io.github.robertograham.departureapi.client.TransportApiClient
 import io.github.robertograham.departureapi.client.dto.*
+import io.github.robertograham.departureapi.exception.BusStopNotFoundException
 import spock.lang.Specification
 import spock.lang.Subject
 
@@ -9,6 +13,10 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
+
+import static feign.Request.HttpMethod.GET
+import static java.nio.charset.StandardCharsets.UTF_8
+import static org.springframework.http.HttpStatus.NOT_FOUND
 
 @Subject([BusStopServiceImpl, BusStopHelper, DepartureHelper])
 final class BusStopServiceImplTests extends Specification {
@@ -25,7 +33,6 @@ final class BusStopServiceImplTests extends Specification {
 
         when:
         def busStop = subject.getBusStop(busStopId)
-                .orElseThrow()
 
         then:
         1 * transportApiClient.places(null,
@@ -104,5 +111,33 @@ final class BusStopServiceImplTests extends Specification {
                     ?.atZone(ZoneId.of("Europe/London"))
                     ?.toEpochSecond()
         }
+    }
+
+    def "get departures handles NotFound exception"() {
+        given:
+        transportApiClient.busStopDepartures(*_) >> {
+            throw FeignException.errorStatus("", Response.builder()
+                    .status(NOT_FOUND.value())
+                    .request(Request.create(GET, "", [:], Request.Body.create("", UTF_8), null))
+                    .headers([:])
+                    .build())
+        }
+
+        when:
+        subject.getDepartures('busStopId')
+
+        then:
+        thrown(BusStopNotFoundException)
+    }
+
+    def "get bus stop throws a BusStopNotFoundException"() {
+        given:
+        transportApiClient.places(*_) >> new PlacesResponse(ZonedDateTime.now(), 'source', 'acknowledgements', [])
+
+        when:
+        subject.getBusStop('busStopId')
+
+        then:
+        thrown(BusStopNotFoundException)
     }
 }
