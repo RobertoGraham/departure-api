@@ -8,7 +8,7 @@ COPY gradlew .
 COPY settings.gradle.kts .
 COPY src ./src
 COPY gradle ./gradle
-RUN ./gradlew bootJar
+RUN ./gradlew test bootJar
 
 FROM azul/zulu-openjdk-alpine:17.0.5-17.38.21-jre-headless
 ARG SOURCES_DIR
