@@ -19,7 +19,7 @@ jobs:
       - run: |
           docker build --target builder -t builder .
           mkdir ~/test-results
-          docker cp $(docker create builder):/src/build/reports/tests/test ~/test-results/spock
+          docker cp $(docker create builder):/src/build/test-results/test ~/test-results/spock
       - store_test_results:
           path: ~/test-results
   publish-docker-image:
