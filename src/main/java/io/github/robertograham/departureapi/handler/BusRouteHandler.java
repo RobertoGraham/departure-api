@@ -32,15 +32,14 @@ public final class BusRouteHandler {
         return ok()
             .contentType(APPLICATION_JSON)
             .body(busRouteService.getBusRoute(serverRequest.pathVariable("operator"), serverRequest.pathVariable("line"), serverRequest.queryParam("busStopId")
-                        .orElseThrow(), serverRequest.queryParam("direction")
-                        .orElseThrow(), serverRequest.queryParam("epochSecond")
-                        .map(Long::parseLong)
-                        .orElseThrow())
-                    .onErrorMap(ProviderErrorException.class, throwable -> {
-                        LOGGER.error("Caught ProviderErrorException", throwable);
-                        return new ResponseStatusException(HttpStatus.BAD_GATEWAY, throwable.getMessage());
-                    })
-                , new ParameterizedTypeReference<>() {
-                });
+                    .orElseThrow(), serverRequest.queryParam("direction")
+                    .orElseThrow(), serverRequest.queryParam("epochSecond")
+                    .map(Long::parseLong)
+                    .orElseThrow())
+                .onErrorMap(ProviderErrorException.class, throwable -> {
+                    LOGGER.error("Caught ProviderErrorException", throwable);
+                    return new ResponseStatusException(HttpStatus.BAD_GATEWAY, throwable.getMessage());
+                }), new ParameterizedTypeReference<>() {
+            });
     }
 }
