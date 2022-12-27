@@ -1,13 +1,12 @@
 package io.github.robertograham.departureapi.service
 
-import feign.FeignException
-import feign.Request
-import feign.Response
 import io.github.robertograham.departureapi.client.TransportApiClient
 import io.github.robertograham.departureapi.client.dto.*
 import io.github.robertograham.departureapi.exception.BusStopNotFoundException
 import io.github.robertograham.departureapi.response.BusStop
 import io.github.robertograham.departureapi.response.Departure
+import org.springframework.web.reactive.function.client.WebClientResponseException
+import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 import spock.lang.Specification
 import spock.lang.Subject
@@ -17,8 +16,6 @@ import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
-import static feign.Request.HttpMethod.GET
-import static java.nio.charset.StandardCharsets.UTF_8
 import static org.springframework.http.HttpStatus.NOT_FOUND
 
 @Subject([BusStopServiceImpl, BusStopHelper, DepartureHelper])
@@ -39,8 +36,8 @@ final class BusStopServiceImplTests extends Specification {
                 null,
                 null,
                 busStopId,
-                { it == [Type.BUS_STOP] }) >>
-                new PlacesResponse(ZonedDateTime.now(), 'source', 'acknowledgements', [new PlacesResponse.Member(Type.BUS_STOP, 'name', 'description', BigDecimal.ZERO, BigDecimal.ONE, 0, busStopId, 0)])
+                new TypeSetContainer(Type.BUS_STOP)) >>
+                Mono.just(new PlacesResponse(ZonedDateTime.now(), 'source', 'acknowledgements', [new PlacesResponse.Member(Type.BUS_STOP, 'name', 'description', BigDecimal.ZERO, BigDecimal.ONE, 0, busStopId, 0)]))
 
         expect:
         StepVerifier.create(subject.getBusStop(busStopId))
@@ -61,11 +58,11 @@ final class BusStopServiceImplTests extends Specification {
                 null,
                 null,
                 null,
-                { it == [Type.BUS_STOP] }) >>
-                new PlacesResponse(ZonedDateTime.now(), 'source', 'acknowledgments', [*Type.values()
+                new TypeSetContainer(Type.BUS_STOP)) >>
+                Mono.just(new PlacesResponse(ZonedDateTime.now(), 'source', 'acknowledgments', [*Type.values()
                         .collect {
                             new PlacesResponse.Member(it, 'name', 'description', BigDecimal.ZERO, BigDecimal.ONE, 0, it.name(), 1)
-                        }, null])
+                        }, null]))
 
         expect: "the returned bus stops to only be mapped from places with a Type of BUS_STOP"
         StepVerifier.create(subject.getNearbyBusStops(longitude, latitude)
@@ -82,7 +79,7 @@ final class BusStopServiceImplTests extends Specification {
 
         and:
         transportApiClient.busStopDepartures(busStopId, Group.NO, 300, NextBuses.NO) >>
-                new BusStopDeparturesResponse('', '', ZonedDateTime.now(), '', '', Bearing.NORTH, '', '', ['': [new BusStopDeparturesResponse.Departure('mode', 'line', 'lineName', 'direction', 'operator', LocalDate.MIN, LocalDate.EPOCH, LocalTime.MAX, LocalTime.MAX, LocalTime.MIN, 'source', 'dir', null, 'operatorName')]], new BusStopDeparturesResponse.Location('', []))
+                Mono.just(new BusStopDeparturesResponse('', '', ZonedDateTime.now(), '', '', Bearing.NORTH, '', '', ['': [new BusStopDeparturesResponse.Departure('mode', 'line', 'lineName', 'direction', 'operator', LocalDate.MIN, LocalDate.EPOCH, LocalTime.MAX, LocalTime.MAX, LocalTime.MIN, 'source', 'dir', null, 'operatorName')]], new BusStopDeparturesResponse.Location('', [])))
 
         expect:
         StepVerifier.create(subject.getDepartures(busStopId))
@@ -94,13 +91,7 @@ final class BusStopServiceImplTests extends Specification {
 
     def "get departures handles NotFound exception"() {
         given:
-        transportApiClient.busStopDepartures(*_) >> {
-            throw FeignException.errorStatus("", Response.builder()
-                    .status(NOT_FOUND.value())
-                    .request(Request.create(GET, "", [:], Request.Body.create("", UTF_8), null))
-                    .headers([:])
-                    .build())
-        }
+        transportApiClient.busStopDepartures(*_) >> Mono.error(WebClientResponseException.create(NOT_FOUND.value(), null, null, null, null))
 
         expect:
         StepVerifier.create(subject.getDepartures('busStopId'))
@@ -109,7 +100,7 @@ final class BusStopServiceImplTests extends Specification {
 
     def "get bus stop throws a BusStopNotFoundException"() {
         given:
-        transportApiClient.places(*_) >> new PlacesResponse(ZonedDateTime.now(), 'source', 'acknowledgements', [])
+        transportApiClient.places(*_) >> Mono.just(new PlacesResponse(ZonedDateTime.now(), 'source', 'acknowledgements', []))
 
         expect:
         StepVerifier.create(subject.getBusStop('busStopId'))

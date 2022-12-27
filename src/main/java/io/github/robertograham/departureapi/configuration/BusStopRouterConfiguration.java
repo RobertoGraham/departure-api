@@ -18,7 +18,7 @@ public class BusStopRouterConfiguration {
         return route()
             .GET("/busStops", accept(APPLICATION_JSON), busStopHandler::getNearbyBusStops)
             .GET("/busStops/{busStopId}", accept(APPLICATION_JSON), busStopHandler::getBusStop)
-            .GET("/{busStopId}/departures", accept(APPLICATION_JSON), busStopHandler::getBusStopDepartures)
+            .GET("/busStops/{busStopId}/departures", accept(APPLICATION_JSON), busStopHandler::getBusStopDepartures)
             .build();
     }
 }

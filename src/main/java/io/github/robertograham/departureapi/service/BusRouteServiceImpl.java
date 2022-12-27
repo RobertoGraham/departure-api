@@ -1,14 +1,13 @@
 package io.github.robertograham.departureapi.service;
 
-import feign.FeignException;
 import io.github.robertograham.departureapi.client.TransportApiClient;
 import io.github.robertograham.departureapi.client.dto.BusRouteResponse;
 import io.github.robertograham.departureapi.client.dto.Stops;
 import io.github.robertograham.departureapi.exception.ProviderErrorException;
 import io.github.robertograham.departureapi.response.BusStop;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -32,9 +31,8 @@ final class BusRouteServiceImpl implements BusRouteService {
     public Mono<Map<Long, List<BusStop>>> getBusRoute(final String operator, final String line, final String busStopId, final String direction, final long epochSecond) {
         final var zonedDateTime = Instant.ofEpochSecond(epochSecond)
             .atZone(ZONE_ID);
-        return Mono.fromCallable(() -> transportApiClient.busRoute(operator, line, direction, busStopId, zonedDateTime.toLocalDate(), zonedDateTime.toLocalTime(), false, Stops.ONWARD))
-            .subscribeOn(Schedulers.boundedElastic())
-            .onErrorMap(FeignException.class, ProviderErrorException::new)
+        return transportApiClient.busRoute(operator, line, direction, busStopId, zonedDateTime.toLocalDate(), zonedDateTime.toLocalTime(), false, Stops.ONWARD)
+            .onErrorMap(WebClientResponseException.class, ProviderErrorException::new)
             .map(busRouteResponse -> busRouteResponse.stops()
                 .stream()
                 .filter(Objects::nonNull)

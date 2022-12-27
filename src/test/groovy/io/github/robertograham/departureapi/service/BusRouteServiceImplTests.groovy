@@ -5,6 +5,7 @@ import io.github.robertograham.departureapi.client.dto.Bearing
 import io.github.robertograham.departureapi.client.dto.BusRouteResponse
 import io.github.robertograham.departureapi.client.dto.Stops
 import io.github.robertograham.departureapi.response.BusStop
+import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 import spock.lang.Specification
 import spock.lang.Subject
@@ -40,7 +41,7 @@ final class BusRouteServiceImplTests extends Specification {
                 LocalTime.ofInstant(Instant.ofEpochSecond(epochSecond), ZONE_ID),
                 false,
                 Stops.ONWARD) >>
-                new BusRouteResponse(ZonedDateTime.now(), '', '', '', '', '', '', '', stops)
+                Mono.just(new BusRouteResponse(ZonedDateTime.now(), '', '', '', '', '', '', '', stops))
 
         expect: "the returned bus route to be correct"
         StepVerifier.create(subject.getBusRoute(operator, line, busStopId, direction, epochSecond))
