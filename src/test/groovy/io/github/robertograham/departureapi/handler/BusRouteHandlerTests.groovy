@@ -1,29 +1,29 @@
-package io.github.robertograham.departureapi.controller
+package io.github.robertograham.departureapi.handler
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.github.robertograham.departureapi.configuration.BusRouteRouterConfiguration
 import io.github.robertograham.departureapi.response.BusStop
 import io.github.robertograham.departureapi.service.BusRouteService
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.reactive.server.WebTestClient
+import reactor.core.publisher.Mono
 import spock.lang.Specification
 import spock.mock.DetachedMockFactory
 
 import static java.math.BigDecimal.ONE
 import static java.math.BigDecimal.ZERO
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import static org.springframework.http.MediaType.APPLICATION_JSON
 
-@WebMvcTest(BusRouteController)
-@ContextConfiguration
-final class BusRouteControllerTests extends Specification {
+@WebFluxTest
+@ContextConfiguration(classes = [BusRouteRouterConfiguration, BusRouteHandler, BusRouteServiceStubConfiguration])
+final class BusRouteHandlerTests extends Specification {
 
     @Autowired
-    private MockMvc mockMvc
+    private WebTestClient webTestClient
 
     @Autowired
     private ObjectMapper objectMapper
@@ -43,15 +43,21 @@ final class BusRouteControllerTests extends Specification {
         final def busRoute = [0L: [new BusStop('id', 'name', 'locality', ZERO, ONE)]]
 
         and: "a stubbed getBusRoute result"
-        busRouteService.getBusRoute(operator, line, busStopId, direction, epochSecond) >> busRoute
+        busRouteService.getBusRoute(operator, line, busStopId, direction, epochSecond) >> Mono.just(busRoute)
 
         expect: "the response to have the correct content"
-        mockMvc.perform(get("/busRoutes/$operator/$line")
-                .param("busStopId", busStopId)
-                .param("direction", direction)
-                .param("epochSecond", epochSecond as String))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(busRoute)))
+        webTestClient.get()
+                .uri { uriBuilder ->
+                    uriBuilder.path("/busRoutes/{operator}/{line}")
+                            .queryParam('busStopId', "{busStopId}")
+                            .queryParam('direction', "{direction}")
+                            .queryParam('epochSecond', "{epochSecond}")
+                            .build(operator, line, busStopId, direction, epochSecond)
+                }
+                .accept(APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody().json(objectMapper.writeValueAsString(busRoute))
     }
 
     @TestConfiguration

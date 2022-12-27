@@ -6,6 +6,9 @@ import feign.Response
 import io.github.robertograham.departureapi.client.TransportApiClient
 import io.github.robertograham.departureapi.client.dto.*
 import io.github.robertograham.departureapi.exception.BusStopNotFoundException
+import io.github.robertograham.departureapi.response.BusStop
+import io.github.robertograham.departureapi.response.Departure
+import reactor.test.StepVerifier
 import spock.lang.Specification
 import spock.lang.Subject
 
@@ -29,13 +32,7 @@ final class BusStopServiceImplTests extends Specification {
         def busStopId = "busStopId"
 
         and:
-        def placesResponseMember = new PlacesResponse.Member(Type.BUS_STOP, 'name', 'description', BigDecimal.ZERO, BigDecimal.ONE, 0, busStopId, 0)
-
-        when:
-        def busStop = subject.getBusStop(busStopId)
-
-        then:
-        1 * transportApiClient.places(null,
+        transportApiClient.places(null,
                 null,
                 null,
                 null,
@@ -43,16 +40,12 @@ final class BusStopServiceImplTests extends Specification {
                 null,
                 busStopId,
                 { it == [Type.BUS_STOP] }) >>
-                new PlacesResponse(ZonedDateTime.now(), 'source', 'acknowledgements', [placesResponseMember])
+                new PlacesResponse(ZonedDateTime.now(), 'source', 'acknowledgements', [new PlacesResponse.Member(Type.BUS_STOP, 'name', 'description', BigDecimal.ZERO, BigDecimal.ONE, 0, busStopId, 0)])
 
-        and:
-        verifyAll busStop, {
-            id() == busStopId
-            latitude() == placesResponseMember.latitude()
-            longitude() == placesResponseMember.longitude()
-            locality() == placesResponseMember.description()
-            name() == placesResponseMember.name()
-        }
+        expect:
+        StepVerifier.create(subject.getBusStop(busStopId))
+                .expectNext(new BusStop('busStopId', 'name', 'description', BigDecimal.ZERO, BigDecimal.ONE))
+                .verifyComplete()
     }
 
     def "get nearby bus stops"() {
@@ -60,11 +53,8 @@ final class BusStopServiceImplTests extends Specification {
         def longitude = BigDecimal.ZERO
         def latitude = BigDecimal.ONE
 
-        when: "a request for nearby bus stops is made"
-        def busStops = subject.getNearbyBusStops(longitude, latitude)
-
-        then: "a request to the Transport API is made and places are received"
-        1 * transportApiClient.places(latitude,
+        and: "a places response from the Transport API is stubbed"
+        transportApiClient.places(latitude,
                 longitude,
                 null,
                 null,
@@ -77,8 +67,13 @@ final class BusStopServiceImplTests extends Specification {
                             new PlacesResponse.Member(it, 'name', 'description', BigDecimal.ZERO, BigDecimal.ONE, 0, it.name(), 1)
                         }, null])
 
-        and: "only the place with a Type of BUS_STOP was used to create a DTO"
-        busStops.collect { it.id() } == [Type.BUS_STOP.name()]
+        expect: "the returned bus stops to only be mapped from places with a Type of BUS_STOP"
+        StepVerifier.create(subject.getNearbyBusStops(longitude, latitude)
+                .map { busStops ->
+                    busStops.collect { it.id() }
+                })
+                .expectNext([Type.BUS_STOP.name()])
+                .verifyComplete()
     }
 
     def "get bus stop departures"() {
@@ -86,31 +81,15 @@ final class BusStopServiceImplTests extends Specification {
         def busStopId = "busStopId"
 
         and:
-        def busStopDeparturesResponseDeparture = new BusStopDeparturesResponse.Departure('mode', 'line', 'lineName', 'direction', 'operator', LocalDate.MIN, LocalDate.EPOCH, LocalTime.MAX, LocalTime.MAX, LocalTime.MIN, 'source', 'dir', null, 'operatorName')
+        transportApiClient.busStopDepartures(busStopId, Group.NO, 300, NextBuses.NO) >>
+                new BusStopDeparturesResponse('', '', ZonedDateTime.now(), '', '', Bearing.NORTH, '', '', ['': [new BusStopDeparturesResponse.Departure('mode', 'line', 'lineName', 'direction', 'operator', LocalDate.MIN, LocalDate.EPOCH, LocalTime.MAX, LocalTime.MAX, LocalTime.MIN, 'source', 'dir', null, 'operatorName')]], new BusStopDeparturesResponse.Location('', []))
 
-        when:
-        def departures = subject.getDepartures(busStopId)
-
-        then:
-        1 * transportApiClient.busStopDepartures(busStopId, Group.NO, 300, NextBuses.NO) >>
-                new BusStopDeparturesResponse('', '', ZonedDateTime.now(), '', '', Bearing.NORTH, '', '', ['': [busStopDeparturesResponseDeparture]], new BusStopDeparturesResponse.Location('', []))
-
-        and:
-        departures.size() == 1
-
-        and:
-        verifyAll departures.first(), {
-            direction() == busStopDeparturesResponseDeparture.dir()
-            destination() == busStopDeparturesResponseDeparture.direction()
-            line() == busStopDeparturesResponseDeparture.line()
-            lineName() == busStopDeparturesResponseDeparture.lineName()
-            operator() == busStopDeparturesResponseDeparture.operator()
-            operatorName() == busStopDeparturesResponseDeparture.operatorName()
-            epochSecond() == busStopDeparturesResponseDeparture.expectedDepartureDate()
-                    ?.atTime(busStopDeparturesResponseDeparture.bestDepartureEstimate())
-                    ?.atZone(ZoneId.of("Europe/London"))
-                    ?.toEpochSecond()
-        }
+        expect:
+        StepVerifier.create(subject.getDepartures(busStopId))
+                .expectNext([new Departure('line', 'lineName', 'operator', LocalDate.EPOCH.atTime(LocalTime.MIN)
+                        .atZone(ZoneId.of("Europe/London"))
+                        .toEpochSecond(), 'operatorName', 'direction', 'dir')])
+                .verifyComplete()
     }
 
     def "get departures handles NotFound exception"() {
@@ -123,21 +102,17 @@ final class BusStopServiceImplTests extends Specification {
                     .build())
         }
 
-        when:
-        subject.getDepartures('busStopId')
-
-        then:
-        thrown(BusStopNotFoundException)
+        expect:
+        StepVerifier.create(subject.getDepartures('busStopId'))
+                .verifyError BusStopNotFoundException
     }
 
     def "get bus stop throws a BusStopNotFoundException"() {
         given:
         transportApiClient.places(*_) >> new PlacesResponse(ZonedDateTime.now(), 'source', 'acknowledgements', [])
 
-        when:
-        subject.getBusStop('busStopId')
-
-        then:
-        thrown(BusStopNotFoundException)
+        expect:
+        StepVerifier.create(subject.getBusStop('busStopId'))
+                .verifyError BusStopNotFoundException
     }
 }
