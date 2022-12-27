@@ -1,6 +1,13 @@
 package io.github.robertograham.departureapi.client;
 
-import io.github.robertograham.departureapi.client.dto.*;
+import io.github.robertograham.departureapi.client.dto.BusRouteResponse;
+import io.github.robertograham.departureapi.client.dto.BusServiceResponse;
+import io.github.robertograham.departureapi.client.dto.BusStopDeparturesResponse;
+import io.github.robertograham.departureapi.client.dto.Group;
+import io.github.robertograham.departureapi.client.dto.NextBuses;
+import io.github.robertograham.departureapi.client.dto.PlacesResponse;
+import io.github.robertograham.departureapi.client.dto.Stops;
+import io.github.robertograham.departureapi.client.dto.Type;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;

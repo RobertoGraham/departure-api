@@ -5,6 +5,7 @@ import io.github.robertograham.departureapi.client.dto.Bearing
 import io.github.robertograham.departureapi.client.dto.BusRouteResponse
 import io.github.robertograham.departureapi.client.dto.Stops
 import io.github.robertograham.departureapi.response.BusStop
+import reactor.test.StepVerifier
 import spock.lang.Specification
 import spock.lang.Subject
 
@@ -30,11 +31,8 @@ final class BusRouteServiceImplTests extends Specification {
         def instants = (0..1).collect { Instant.ofEpochSecond it * 60L }
         def stops = createStops(instants)
 
-        when: "a request for the bus route is made"
-        def epochSecondToBusStopListMap = subject.getBusRoute(operator, line, busStopId, direction, epochSecond)
-
-        then: "a request to the Transport API is made and a bus route is received"
-        1 * transportApiClient.busRoute(operator,
+        and: "a bus route response from the Transport API is stubbed"
+        transportApiClient.busRoute(operator,
                 line,
                 direction,
                 busStopId,
@@ -44,12 +42,14 @@ final class BusRouteServiceImplTests extends Specification {
                 Stops.ONWARD) >>
                 new BusRouteResponse(ZonedDateTime.now(), '', '', '', '', '', '', '', stops)
 
-        and:
-        epochSecondToBusStopListMap == instants.indexed().collectEntries { final index, final instant ->
-            [(instant.epochSecond): [stops[index].with {
-                new BusStop(atcoCode(), name(), locality(), latitude(), longitude())
-            }]]
-        }
+        expect: "the returned bus route to be correct"
+        StepVerifier.create(subject.getBusRoute(operator, line, busStopId, direction, epochSecond))
+                .expectNext(instants.indexed().collectEntries { final index, final instant ->
+                    [(instant.epochSecond): [stops[index].with {
+                        new BusStop(atcoCode(), name(), locality(), latitude(), longitude())
+                    }]]
+                })
+                .verifyComplete()
     }
 
     private static List<BusRouteResponse.Stop> createStops(final List<Instant> instants) {
