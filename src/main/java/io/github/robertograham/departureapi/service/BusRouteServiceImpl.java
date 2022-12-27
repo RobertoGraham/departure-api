@@ -1,10 +1,14 @@
 package io.github.robertograham.departureapi.service;
 
+import feign.FeignException;
 import io.github.robertograham.departureapi.client.TransportApiClient;
 import io.github.robertograham.departureapi.client.dto.BusRouteResponse;
 import io.github.robertograham.departureapi.client.dto.Stops;
+import io.github.robertograham.departureapi.exception.ProviderErrorException;
 import io.github.robertograham.departureapi.response.BusStop;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -25,13 +29,16 @@ final class BusRouteServiceImpl implements BusRouteService {
     }
 
     @Override
-    public Map<Long, List<BusStop>> getBusRoute(final String operator, final String line, final String busStopId, final String direction, final long epochSecond) {
+    public Mono<Map<Long, List<BusStop>>> getBusRoute(final String operator, final String line, final String busStopId, final String direction, final long epochSecond) {
         final var zonedDateTime = Instant.ofEpochSecond(epochSecond)
             .atZone(ZONE_ID);
-        return transportApiClient.busRoute(operator, line, direction, busStopId, zonedDateTime.toLocalDate(), zonedDateTime.toLocalTime(), false, Stops.ONWARD)
-            .stops().stream()
-            .filter(Objects::nonNull)
-            .collect(Collectors.groupingBy(this::mapStopToEpochSecond, Collectors.mapping(BusStopHelper::createBusStop, Collectors.toList())));
+        return Mono.fromCallable(() -> transportApiClient.busRoute(operator, line, direction, busStopId, zonedDateTime.toLocalDate(), zonedDateTime.toLocalTime(), false, Stops.ONWARD))
+            .subscribeOn(Schedulers.boundedElastic())
+            .onErrorMap(FeignException.class, ProviderErrorException::new)
+            .map(busRouteResponse -> busRouteResponse.stops()
+                .stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.groupingBy(this::mapStopToEpochSecond, Collectors.mapping(BusStopHelper::createBusStop, Collectors.toList()))));
     }
 
     private long mapStopToEpochSecond(final BusRouteResponse.Stop stop) {
