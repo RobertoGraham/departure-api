@@ -6,6 +6,7 @@ plugins {
     id("org.springframework.boot") version "3.0.1"
     id("io.spring.dependency-management") version "1.1.0"
     id("info.solidsoft.pitest") version "1.9.11"
+    id("org.graalvm.buildtools.native") version "0.9.19"
 }
 
 group = "io.github.robertograham"
@@ -14,7 +15,7 @@ description = "Departure API"
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(19))
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 
