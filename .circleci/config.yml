@@ -16,12 +16,9 @@ jobs:
     steps:
       - checkout
       - setup-remote-docker
-      - run: |
-          docker build --target builder -t builder .
-          mkdir ~/test-results
-          docker cp $(docker create builder):/src/build/test-results/test ~/test-results/spock
+      - run: ./gradlew test bootBuildImage
       - store_test_results:
-          path: ~/test-results
+          path: ./build/test-results/test
   publish-docker-image:
     executor: docker
     environment:
@@ -30,8 +27,8 @@ jobs:
       - checkout
       - setup-remote-docker
       - run: |
+          ./gradlew bootBuildImage --imageName=$IMAGE_TAG
           docker login ghcr.io -u RobertoGraham -p $PERSONAL_ACCESS_TOKEN
-          docker build -t $IMAGE_TAG .
           docker push $IMAGE_TAG
   run-tests:
     machine:

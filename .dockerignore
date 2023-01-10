@@ -1,9 +1,0 @@
-.idea
-.dockerignore
-.gitignore
-*.iml
-Dockerfile
-.circleci
-heroku.yml
-build
-.gradle

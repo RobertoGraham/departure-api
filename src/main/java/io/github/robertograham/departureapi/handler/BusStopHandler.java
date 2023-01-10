@@ -3,9 +3,11 @@ package io.github.robertograham.departureapi.handler;
 import io.github.robertograham.departureapi.exception.BusStopNotFoundException;
 import io.github.robertograham.departureapi.exception.ProviderErrorException;
 import io.github.robertograham.departureapi.response.BusStop;
+import io.github.robertograham.departureapi.response.Departure;
 import io.github.robertograham.departureapi.service.BusStopService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -21,6 +23,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.web.reactive.function.server.ServerResponse.ok;
 
 @Component
+@RegisterReflectionForBinding({BusStop.class, Departure.class})
 public final class BusStopHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BusStopHandler.class);

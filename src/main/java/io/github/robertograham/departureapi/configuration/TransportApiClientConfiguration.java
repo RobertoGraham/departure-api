@@ -3,11 +3,18 @@ package io.github.robertograham.departureapi.configuration;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.robertograham.departureapi.client.TransportApiClient;
+import io.github.robertograham.departureapi.client.dto.Bearing;
+import io.github.robertograham.departureapi.client.dto.BusRouteResponse;
+import io.github.robertograham.departureapi.client.dto.BusServiceResponse;
+import io.github.robertograham.departureapi.client.dto.BusStopDeparturesResponse;
 import io.github.robertograham.departureapi.client.dto.Group;
 import io.github.robertograham.departureapi.client.dto.NextBuses;
+import io.github.robertograham.departureapi.client.dto.PlacesResponse;
 import io.github.robertograham.departureapi.client.dto.Stops;
+import io.github.robertograham.departureapi.client.dto.Type;
 import io.github.robertograham.departureapi.client.dto.TypeSetContainer;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +32,12 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Configuration
+@RegisterReflectionForBinding({Bearing.class, BusRouteResponse.class, BusRouteResponse.Stop.class,
+    BusRouteResponse.Stop.Next.class, BusServiceResponse.class, BusServiceResponse.Operator.class,
+    BusServiceResponse.Direction.class, BusServiceResponse.Direction.Destination.class,
+    BusServiceResponse.Centroid.class, BusStopDeparturesResponse.class,
+    BusStopDeparturesResponse.Location.class, BusStopDeparturesResponse.Departure.class,
+    PlacesResponse.class, PlacesResponse.Member.class, Type.class})
 class TransportApiClientConfiguration {
 
     @Bean

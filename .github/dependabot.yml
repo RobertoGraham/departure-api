@@ -6,9 +6,3 @@ updates:
       interval: "daily"
     reviewers:
       - "RobertoGraham"
-  - package-ecosystem: "docker"
-    directory: "/"
-    schedule:
-      interval: "daily"
-    reviewers:
-      - "RobertoGraham"
