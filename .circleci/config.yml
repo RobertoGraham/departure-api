@@ -1,4 +1,9 @@
 version: 2.1
+commands:
+  setup-remote-docker:
+    steps:
+      - setup_remote_docker:
+          version: 20.10.11
 
 executors:
   java:
@@ -10,6 +15,7 @@ jobs:
     executor: java
     steps:
       - checkout
+      - setup-remote-docker
       - run: ./gradlew test bootBuildImage
       - store_test_results:
           path: ./build/test-results/test
@@ -19,10 +25,9 @@ jobs:
       IMAGE_TAG: ghcr.io/robertograham/departure-api:latest
     steps:
       - checkout
-      - setup_remote_docker:
-          version: 20.10.11
+      - setup-remote-docker
       - run: |
-          ./gradlew bootBuildImage --imageName=$IMAGE_TAG
+          ./gradlew test bootBuildImage --imageName=$IMAGE_TAG
           docker login ghcr.io -u RobertoGraham -p $PERSONAL_ACCESS_TOKEN
           docker push $IMAGE_TAG
   run-tests:
