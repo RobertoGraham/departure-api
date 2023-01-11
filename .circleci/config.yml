@@ -3,7 +3,7 @@ commands:
   setup-remote-docker:
     steps:
       - setup_remote_docker:
-          version: 20.10.11
+          version: 20.10.18
 
 executors:
   java:
@@ -28,6 +28,7 @@ jobs:
       - setup-remote-docker
       - run: |
           ./gradlew test bootBuildImage --imageName=$IMAGE_TAG
+          apk add docker-cli
           docker login ghcr.io -u RobertoGraham -p $PERSONAL_ACCESS_TOKEN
           docker push $IMAGE_TAG
   run-tests:
