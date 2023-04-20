@@ -3,7 +3,7 @@ import info.solidsoft.gradle.pitest.PitestPluginExtension
 plugins {
     java
     groovy
-    id("org.springframework.boot") version "3.0.2"
+    id("org.springframework.boot") version "3.0.6"
     id("io.spring.dependency-management") version "1.1.0"
     id("info.solidsoft.pitest") version "1.9.11"
     id("org.graalvm.buildtools.native") version "0.9.19"
